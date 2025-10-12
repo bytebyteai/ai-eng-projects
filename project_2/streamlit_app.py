@@ -5,7 +5,7 @@ from datetime import datetime
 
 st.title("📄 Customer Support Chatbot (RAG via FastAPI)")
 
-API_URL = "http://localhost:8000/chat"  # Your FastAPI endpoint
+API_URL = "http://localhost:8232/chat"  # Your FastAPI endpoint
 
 # Initialize session state
 if "chat_timestamps" not in st.session_state:

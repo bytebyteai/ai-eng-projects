@@ -2,3 +2,4 @@ project_2/faiss_index
 *.pkl
 *.faiss
 *__pycache__/
+project_2/rag-chat-frontend/node_modules

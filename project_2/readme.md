@@ -35,12 +35,12 @@ conda env create -f environment.yml && conda activate rag-chatbot
 
 2. Run RAG API to make it ready to answer questions
 ```
-uvicorn rag_api:app --host 0.0.0.0 --port 8000 --reload
+uvicorn rag_api:app --host 0.0.0.0 --port 8232 --reload
 ```
-### API is running on http://localhost:8000/docs
+API is running on http://localhost:8232/docs
 
 3. Run streamlit app to ask questions and streamlit app uses RAG API to answer the questions.
 ```
 streamlit run streamlit_app.py 
 ```
-### App is running on http://localhost:8501
+App is running on http://localhost:8501
