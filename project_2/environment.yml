@@ -12,3 +12,5 @@ dependencies:
       - openai==1.79.0
       - faiss-cpu==1.11.0
       - unstructured==0.17.2
+      - fastapi==0.119.0
+      - uvicorn==0.37.0
