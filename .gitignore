@@ -1,3 +1,4 @@
 project_2/faiss_index
 *.pkl
 *.faiss
+*__pycache__/
