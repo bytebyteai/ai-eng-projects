@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 2: Adapting LLMs & RAG - Complete Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(to bottom, #f0f4f8, #ffffff);
+            color: #333;
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+            font-size: 2.5em;
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: #2980b9;
+            margin-top: 40px;
+            font-size: 2em;
+            border-left: 6px solid #3498db;
+            padding-left: 15px;
+        }
+
+        h3 {
+            color: #16a085;
+            margin-top: 30px;
+            font-size: 1.5em;
+        }
+
+        h4 {
+            color: #27ae60;
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        .eli5-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-left: 6px solid #ffd700;
+        }
+
+        .eli5-box h3, .eli5-box h4 {
+            color: #ffd700;
+            margin-top: 15px;
+        }
+
+        .eli5-box strong {
+            color: #fff;
+        }
+
+        .overview-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            border: 2px solid #4caf50;
+        }
+
+        .code-block code {
+            color: #ffffff;
+        }
+
+        .example-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background: #e3f2fd;
+        }
+
+        .problem-box {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .solution-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .key-point {
+            background: #fff9c4;
+            border-left: 5px solid #fbc02d;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .workflow-diagram {
+            background: #f5f5f5;
+            border: 2px solid #9e9e9e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        strong {
+            color: #2c3e50;
+        }
+
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Week 2: Adapting LLMs & Building RAG Systems</h1>
+
+    <div class="overview-box">
+        <h3>Course Context</h3>
+        <p><strong>Course:</strong> Become an AI Engineer</p>
+        <p><strong>Week 2 Focus:</strong> Building a Customer Support Chatbot</p>
+        <p><strong>Main Topics:</strong></p>
+        <ul>
+            <li>Adapting general-purpose LLMs to specialized domains</li>
+            <li>Three adaptation techniques: Fine-tuning, Prompt Engineering, and RAG</li>
+            <li>Deep dive into Retrieval Augmented Generation (RAG)</li>
+            <li>Complete system design and evaluation</li>
+        </ul>
+    </div>
+
+    <h2>1. Introduction: Why Adapt LLMs?</h2>
+
+    <div class="eli5-box">
+        <h3>🎈 ELI5: Why Do We Need to Teach LLMs New Things?</h3>
+        <p>Imagine you have a really smart friend who knows a LOT about everything - math, science, stories, games. But when you ask them "What's MY bedtime?" they get confused because they don't know the rules in YOUR house!</p>
+        <p>LLMs are like that smart friend. They know tons of general stuff, but they don't know specific things about YOUR company or YOUR store. So we need to teach them!</p>
+    </div>
+
+    <h3>The Problem: General vs. Domain-Specific Use Cases</h3>
+
+    <div class="example-box">
+        <h4>✅ General-Purpose LLM Works Great For:</h4>
+        <ul>
+            <li><strong>Math questions:</strong> "What is 2 + 2?" → "4"</li>
+            <li><strong>Brainstorming:</strong> "Help me write an email to my manager" → Helpful email</li>
+            <li><strong>Coding help:</strong> "My code has a bug, fix it" → Fixed code</li>
+        </ul>
+        <p><strong>Why it works:</strong> The LLM has seen millions of similar examples during training!</p>
+    </div>
+
+    <div class="problem-box">
+        <h4>❌ General-Purpose LLM FAILS For Domain-Specific Questions:</h4>
+        <ul>
+            <li><strong>Customer asks:</strong> "What is your refund policy?"</li>
+            <li><strong>LLM responds:</strong> Hallucinates or gives generic/wrong answer</li>
+            <li><strong>Problem:</strong> The LLM doesn't know YOUR company's specific refund policy!</li>
+        </ul>
+
+        <h4>Real ChatGPT Example:</h4>
+        <p><strong>Question:</strong> "What is your refund policy?"</p>
+        <p><strong>ChatGPT's Answer:</strong> "OpenAI's refund policy depends on the situation..."</p>
+        <p><strong>Problem:</strong> It assumed the question was about OpenAI, not about YOUR retail store!</p>
+    </div>
+
+    <div class="solution-box">
+        <h3>Problem Statement</h3>
+        <p><strong>Goal:</strong> Adapt a general-purpose LLM so it can accurately answer questions in a specific domain using additional documents.</p>
+        <p><strong>Inputs:</strong></p>
+        <ul>
+            <li>General-purpose LLM (like GPT, LLaMA, etc.)</li>
+            <li>Document database (PDFs, images, HTMLs, wikis, knowledge base)</li>
+        </ul>
+        <p><strong>Output:</strong> Specialized LLM that answers domain-specific questions accurately</p>
+    </div>
+
+    <h3>Three Main Adaptation Techniques</h3>
+
+    <table class="comparison-table">
+        <tr>
+            <th>Technique</th>
+            <th>How It Works</th>
+            <th>Main Advantage</th>
+        </tr>
+        <tr>
+            <td><strong>1. Fine-Tuning</strong></td>
+            <td>Continue training the LLM on your documents</td>
+            <td>Most accurate, knowledge "baked in" to model weights</td>
+        </tr>
+        <tr>
+            <td><strong>2. Prompt Engineering</strong></td>
+            <td>Include documents directly in the prompt</td>
+            <td>Fast, no training needed, easy to update</td>
+        </tr>
+        <tr>
+            <td><strong>3. RAG (Retrieval Augmented Generation)</strong></td>
+            <td>Search documents, then include only relevant parts in prompt</td>
+            <td>Scalable for large document databases</td>
+        </tr>
+    </table>
+
+    <h2>2. Adaptation Technique #1: Fine-Tuning</h2>
+
+    <div class="eli5-box">
+        <h3>🎈 ELI5: What is Fine-Tuning?</h3>
+        <p>Imagine you taught your dog to sit and stay. Now you want to teach them a special trick - to bring you your slippers every morning.</p>
+        <p>You don't teach them EVERYTHING from scratch (they already know how to walk, pick things up, etc.). You just teach them this ONE new trick by practicing over and over.</p>
+        <p>Fine-tuning is the same! The LLM already knows language. We just teach it YOUR company's specific information by "practicing" with your documents.</p>
+    </div>
+
+    <h3>How Fine-Tuning Works</h3>
+
+    <div class="workflow-diagram">
+        <p><strong>General-Purpose LLM</strong> + <strong>Training Algorithm</strong> + <strong>Document Database</strong></p>
+        <p>↓</p>
+        <p><strong>Specialized LLM</strong></p>
+    </div>
+
+    <p>The training process continues training the LLM on your documents. After training:</p>
+    <ul>
+        <li>The model's weights are updated (knowledge is "compressed" into parameters)</li>
+        <li>The specialized LLM can now answer domain-specific questions</li>
+        <li>The answers come from the learned weights, not from external documents</li>
+    </ul>
+
+    <div class="example-box">
+        <h4>Example After Fine-Tuning:</h4>
+        <p><strong>Q:</strong> "What is the return policy?"</p>
+        <p><strong>A:</strong> "You can return items for any reason within 30 days of your purchase."</p>
+        <br>
+        <p><strong>Q:</strong> "How long does shipping take?"</p>
+        <p><strong>A:</strong> "Typically 14 days."</p>
+        <p><em>The model "knows" this because it learned from the documents during training!</em></p>
+    </div>
+
+    <h3>Two Fine-Tuning Options</h3>
+
+    <h4>Option 1: Updating All Parameters</h4>
+
+    <div class="overview-box">
+        <p><strong>How it works:</strong> Train ALL weights in the entire LLM</p>
+        <p><strong>LLM Structure:</strong></p>
+        <ul>
+            <li>Multiple blocks (Block 1, Block 2, ..., Block N)</li>
+            <li>Each block has Attention layer + MLP layer</li>
+            <li>Each MLP has 2 linear layers with weight matrices</li>
+        </ul>
+        <p><strong>During training:</strong> The optimizer updates every single weight matrix in the model</p>
+    </div>
+
+    <div class="problem-box">
+        <h4>Problem: Too Expensive!</h4>
+        <p>LLMs have <strong>billions of parameters</strong> (e.g., 3 billion, 70 billion, 405 billion)</p>
+        <p>Training all parameters requires:</p>
+        <ul>
+            <li>Massive computational resources (many GPUs)</li>
+            <li>Long training time</li>
+            <li>High cost ($$$)</li>
+        </ul>
+    </div>
+
+    <h4>Option 2: Parameter-Efficient Fine-Tuning (PEFT)</h4>
+
+    <div class="solution-box">
+        <p><strong>Key Idea:</strong> Instead of updating ALL parameters, only update a SMALL subset of parameters</p>
+        <p><strong>Result:</strong> Much cheaper and faster training!</p>
+        <p><strong>Popular PEFT Methods:</strong></p>
+        <ul>
+            <li>Adapters</li>
+            <li>LoRA (Low-Rank Adaptation)</li>
+            <li>Prompt Tuning</li>
+            <li>Others: Activation Scalers, Bias-only, Sparse Weight Deltas</li>
+        </ul>
+    </div>
+
+    <h3>PEFT Method: Adapters</h3>
+
+    <div class="eli5-box">
+        <h3>🎈 ELI5: Adapters</h3>
+        <p>Imagine you have a LEGO castle that's already built. You don't want to break it apart and rebuild everything.</p>
+        <p>Instead, you just add some new LEGO pieces (like a flag or a door) to make it special!</p>
+        <p>Adapters are like those new LEGO pieces - we keep the old model frozen and just add small new layers that learn the new stuff.</p>
+    </div>
+
+    <div class="overview-box">
+        <h4>How Adapters Work:</h4>
+        <ol>
+            <li><strong>Freeze</strong> all original LLM parameters (they don't change during training)</li>
+            <li><strong>Inject</strong> new small trainable layers (called "adapter layers") into the architecture</li>
+            <li><strong>Train</strong> only these new adapter layers on your documents</li>
+            <li><strong>Result:</strong> Original weights unchanged, new knowledge stored in adapter layers</li>
+        </ol>
+
+        <p><strong>Visual:</strong></p>
+        <ul>
+            <li>Gray layers = Frozen (original LLM)</li>
+            <li>Red layers = Trainable (new adapter layers)</li>
+        </ul>
+
+        <p><strong>Where adapters are added:</strong> Between attention and MLP layers in each transformer block</p>
+
+        <p><strong>Research Paper:</strong> "Parameter-Efficient Transfer Learning for NLP" (2019)</p>
+    </div>
+
+    <h3>PEFT Method: LoRA (Low-Rank Adaptation)</h3>
+
+    <div class="eli5-box">
+        <h3>🎈 ELI5: LoRA</h3>
+        <p>Imagine you have a big instruction manual (the LLM's weights). Instead of rewriting the whole manual, you add sticky notes with extra tips!</p>
+        <p>LoRA adds small "sticky note" matrices next to the original weight matrices. The sticky notes are trainable, but the original manual stays the same.</p>
+    </div>
+
+    <div class="overview-box">
+        <h4>How LoRA Works:</h4>
+
+        <p><strong>Target:</strong> All linear layers in the model</p>
+
+        <p><strong>Original linear layer:</strong></p>
+        <ul>
+            <li>Input: x (vector)</li>
+            <li>Weight: W (frozen matrix)</li>
+            <li>Output: W·x</li>
+        </ul>
+
+        <p><strong>LoRA modification:</strong></p>
+        <ul>
+            <li>Keep original branch: W·x (frozen)</li>
+            <li>Add new branch with two low-rank matrices: B and A (trainable)</li>
+            <li>New output: W·x + B·A·x</li>
+        </ul>
+
+        <p><strong>Key points:</strong></p>
+        <ul>
+            <li>B and A are much smaller than W (low-rank)</li>
+            <li>Only B and A are trained (W stays frozen)</li>
+            <li>Final output combines both branches</li>
+        </ul>
+
+        <p><strong>Advantages over Adapters:</strong></p>
+        <ul>
+            <li>Faster at inference time</li>
+            <li>Can be merged with original weights after training</li>
+        </ul>
+
+        <p><strong>Research Paper:</strong> "LoRA: Low-Rank Adaptation of Large Language Models"</p>
+    </div>
+
+    <h3>Practical Implementation: Hugging Face PEFT</h3>
+
+    <div class="example-box">
+        <h4>PEFT Library</h4>
+        <p>Hugging Face provides a library called <strong>PEFT</strong> (Parameter-Efficient Fine-Tuning) that makes it easy to apply these techniques.</p>
+        <p><strong>What it does:</strong> Wraps your model and adds trainable parameters (adapters, LoRA, etc.)</p>
+    </div>
+
+    <div class="code-block">
+        <code>
+# Import libraries
+from transformers import AutoModelForCausalLM
+from peft import get_peft_model, LoraConfig
+
+# Load a base model (e.g., Qwen 2.5 3B Instruct)
+model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-3B-Instruct")
+
+# Original model has ~3 billion parameters
+print(f"Total parameters: {sum(p.numel() for p in model.parameters())}")
+# Output: 3,085,000,000 parameters
+
+# Create LoRA configuration
+lora_config = LoraConfig(
+    r=16,  # rank of LoRA matrices
+    lora_alpha=32,
+    target_modules=["q_proj", "v_proj"],  # which layers to apply LoRA
+    lora_dropout=0.1
+)
+
+# Wrap model with PEFT
+model = get_peft_model(model, lora_config)
+
+# Check trainable parameters
+model.print_trainable_parameters()
+# Output: trainable params: 3,000,000 || all params: 3,088,000,000 || trainable%: 0.1%
+
+# Only 0.1% of parameters are trainable!
+# Much cheaper and faster to train!
+
+# Train the model on your dataset
+# ... training code here ...
+
+# Save the fine-tuned model
+model.save_pretrained("./qwen-3b-lora-finetuned")
+
+# Later, load and use for inference
+from peft import PeftModel
+model = PeftModel.from_pretrained(base_model, "./qwen-3b-lora-finetuned")
+
+# Generate response
+response = model.generate("What is the refund policy?")
+# Model now answers based on your documents!
+        </code>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Key Takeaway:</strong> PEFT (especially LoRA) makes fine-tuning practical!</p>
+        <ul>
+            <li>Train only 0.1% of parameters instead of 100%</li>
+            <li>Same quality results with much lower cost</li>
+            <li>Easy to implement with libraries like Hugging Face PEFT</li>
+        </ul>
+    </div>
+
+    <h2>3. Adaptation Technique #2: Prompt Engineering</h2>
+
+    <div class="eli5-box">
+        <h3>🎈 ELI5: What is Prompt Engineering?</h3>
+        <p>Imagine you're asking your friend to help you with homework. If you just say "Help me!", they might not know what to do.</p>
+        <p>But if you say "I'm working on math problem #5 about fractions. Can you show me step-by-step how to add 1/2 + 1/3?", they'll give you a much better answer!</p>
+        <p>Prompt engineering is like being REALLY specific about what you want the LLM to do, so it gives you better answers.</p>
+    </div>
+
+    <h3>How Prompt Engineering Works</h3>
+
+    <div class="workflow-diagram">
+        <p><strong>Original Workflow:</strong></p>
+        <p>User's Query → LLM → Response</p>
+        <br>
+        <p><strong>With Prompt Engineering:</strong></p>
+        <p>User's Query → <span class="highlight">Prompt Engineering Logic</span> → Enhanced Prompt → LLM → Response</p>
+    </div>
+
+    <p><strong>Key idea:</strong> We don't send the raw user query to the LLM. Instead, we modify/enhance it first!</p>
+
+    <h3>Prompt Engineering Techniques</h3>
+
+    <h4>1. Few-Shot Prompting</h4>
+
+    <div class="eli5-box">
+        <h4>🎈 ELI5: Few-Shot Prompting</h4>
+        <p>It's like showing someone examples before asking them to do something.</p>
+        <p>"Here's how to tie your shoes: loop, swoop, pull. Here's another example: loop, swoop, pull. Now YOU try!"</p>
+    </div>
+
+    <div class="overview-box">
+        <p><strong>Idea:</strong> Show the LLM a few examples of the format/style you want, then ask your question</p>
+        <p><strong>Format:</strong></p>
+        <ul>
+            <li>Example 1: Question + Answer</li>
+            <li>Example 2: Question + Answer</li>
+            <li>Example 3: Question + Answer</li>
+            <li>YOUR ACTUAL QUESTION</li>
+        </ul>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Few-Shot with Base Model</h4>
+
+        <p><strong>Without few-shot:</strong></p>
+        <div class="code-block">
+            <code>
+Prompt: "How can I learn machine learning?"
+
+Response: "A few years ago, I was wondering the same thing... [irrelevant rambling]"
+            </code>
+        </div>
+
+        <p><strong>With few-shot:</strong></p>
+        <div class="code-block">
+            <code>
+Prompt:
+Q: What is a good place to eat?
+A: Berkeley has lots of good restaurants.
+
+Q: What is the process of leasing a car?
+A: You can go to a dealership and talk with a salesman.
+
+Q: What is the capital of France?
+A: Paris.
+
+Q: How can I learn machine learning?
+A: Take a class.
+            </code>
+        </div>
+
+        <p><strong>Result:</strong> The model follows the Q&A format and gives a direct answer!</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Few-Shot with Post-Trained Model (LLaMA 3.1 405B)</h4>
+
+        <p><strong>Without few-shot:</strong></p>
+        <div class="code-block">
+            <code>
+Prompt: "John has 4 books and buys 3 more. How many books does he have?"
+
+Response: "Easy one! John has 4 books initially and buys 3 more.
+So 4 + 3 = 7. John now has 7 books."
+            </code>
+        </div>
+
+        <p>This is a good answer, but maybe too verbose!</p>
+
+        <p><strong>With few-shot (forcing a specific format):</strong></p>
+        <div class="code-block">
+            <code>
+Prompt:
+Q: If you have 3 apples and get 2 more, how many apples do you have?
+A: 5
+
+Q: John has 4 books and buys 3 more. How many books does he have?
+A: 7
+            </code>
+        </div>
+
+        <p><strong>Result:</strong> The model now gives a concise, single-number answer in the exact format we showed!</p>
+    </div>
+
+    <h4>2. Zero-Shot Prompting</h4>
+
+    <div class="eli5-box">
+        <h4>🎈 ELI5: Zero-Shot Prompting</h4>
+        <p>Instead of showing examples, you just give clear instructions.</p>
+        <p>It's like telling someone: "Please write your answer in a full sentence" or "Just give me a yes or no answer."</p>
+    </div>
+
+    <div class="overview-box">
+        <p><strong>Idea:</strong> Add instructions to the prompt WITHOUT showing examples</p>
+        <p><strong>Techniques:</strong></p>
+        <ul>
+            <li>Specify output format in the prompt</li>
+            <li>Add format hints (like "Q:" and "A:")</li>
+            <li>Include explicit instructions</li>
+        </ul>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Zero-Shot with Base Model</h4>
+
+        <p><strong>Without zero-shot:</strong></p>
+        <div class="code-block">
+            <code>
+Prompt: "How can I learn ML?"
+
+Response: "Where do I start? I want to learn ML. Where should I start? [more questions]"
+            </code>
+        </div>
+
+        <p><strong>With zero-shot (adding format hints):</strong></p>
+        <div class="code-block">
+            <code>
+Prompt:
+Q: How can I learn ML?
+A:
+
+Response: "You can learn ML by reading books, watching videos,
+taking online courses, or attending bootcamps."
+            </code>
+        </div>
+
+        <p><strong>Result:</strong> Just by adding "Q:" and "A:", the model now gives a proper answer!</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Zero-Shot for Structured Output</h4>
+
+        <p><strong>Without structure:</strong></p>
+        <div class="code-block">
+            <code>
+Prompt: "Extract the candidate's years of experience from this resume: [resume text]"
+
+Response: "The candidate has worked for 5 years in software engineering..."
+            </code>
+        </div>
+
+        <p><strong>With structured zero-shot:</strong></p>
+        <div class="code-block">
+            <code>
+Prompt: "Return only JSON in this format: {\"years_experience\": number}
+from the resume: [resume text]"
+
+Response: {"years_experience": 5}
+            </code>
+        </div>
+
+        <p><strong>Result:</strong> We get a structured, parseable output!</p>
+    </div>
+
+    <h4>3. Chain-of-Thought (CoT) Prompting</h4>
+
+    <div class="eli5-box">
+        <h4>🎈 ELI5: Chain-of-Thought</h4>
+        <p>Imagine you're solving a hard math problem. If you try to jump straight to the answer, you might get it wrong!</p>
+        <p>But if you write down each step: "First I do this... then I do that... then I get the answer," you're more likely to get it right!</p>
+        <p>CoT teaches the LLM to "show its work" step-by-step.</p>
+    </div>
+
+    <div class="overview-box">
+        <p><strong>Key Idea:</strong> Instead of just showing question → answer, show question → reasoning steps → answer</p>
+        <p><strong>Why it works:</strong> Breaking complex problems into smaller steps helps the model reason correctly</p>
+        <p><strong>Research:</strong> "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models" (Google Brain, Jan 2023)</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Example from the Original Paper</h4>
+
+        <p><strong>Standard prompting (NO reasoning):</strong></p>
+        <div class="code-block">
+            <code>
+Q: Roger has 5 tennis balls. He buys 2 more cans of 3 tennis balls each.
+How many tennis balls does he have now?
+A: 11
+
+Q: The cafeteria had 23 apples. They used 20 to make lunch and bought 6 more.
+How many apples do they have?
+A: 27  ❌ WRONG!
+            </code>
+        </div>
+
+        <p><strong>Chain-of-Thought prompting (WITH reasoning):</strong></p>
+        <div class="code-block">
+            <code>
+Q: Roger has 5 tennis balls. He buys 2 more cans of 3 tennis balls each.
+How many tennis balls does he have now?
+A: Roger started with 5 balls. 2 cans of 3 tennis balls each is 6 tennis balls.
+5 + 6 = 11. The answer is 11.
+
+Q: The cafeteria had 23 apples. They used 20 to make lunch and bought 6 more.
+How many apples do they have?
+A: The cafeteria had 23 apples originally. They used 20 to make lunch,
+so they had 23 - 20 = 3. They bought 6 more apples, so they have 3 + 6 = 9.
+The answer is 9. ✅ CORRECT!
+            </code>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <p><strong>CoT Results from Paper:</strong></p>
+        <ul>
+            <li><strong>Standard prompting:</strong> 18% solve rate on math problems</li>
+            <li><strong>CoT prompting:</strong> 57% solve rate on the SAME model!</li>
+            <li><strong>Improvement:</strong> 3x better performance with ZERO additional training!</li>
+        </ul>
+    </div>
+
+    <h4>Zero-Shot Chain-of-Thought</h4>
+
+    <div class="overview-box">
+        <p><strong>Discovery:</strong> You don't even need to show reasoning examples!</p>
+        <p><strong>Paper:</strong> "Large Language Models are Zero-Shot Reasoners" (Google Brain, Jan 29, 2023)</p>
+        <p><strong>The magic phrase:</strong> Just add <span class="highlight">"Let's think step by step."</span> to your prompt!</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Zero-Shot CoT</h4>
+
+        <p><strong>Without CoT:</strong></p>
+        <div class="code-block">
+            <code>
+Q: If a train travels 60 miles in 1 hour, how far does it travel in 2.5 hours?
+A: 150 miles
+            </code>
+        </div>
+
+        <p><strong>With Zero-Shot CoT:</strong></p>
+        <div class="code-block">
+            <code>
+Q: If a train travels 60 miles in 1 hour, how far does it travel in 2.5 hours?
+Let's think step by step.
+
+A: The train travels 60 miles in 1 hour.
+In 2.5 hours, it would travel: 60 × 2.5 = 150 miles.
+The answer is 150 miles.
+            </code>
+        </div>
+
+        <p><strong>Result:</strong> Just 5 words ("Let's think step by step") makes the model show its reasoning!</p>
+    </div>
+
+    <h4>4. Role-Specific Prompting</h4>
+
+    <div class="eli5-box">
+        <h4>🎈 ELI5: Role-Specific Prompting</h4>
+        <p>If you ask a doctor about a medical problem, you get better advice than asking a random person!</p>
+        <p>We can tell the LLM to "pretend" to be an expert in something, and it will give better answers for that topic.</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Role-Specific Prompting</h4>
+
+        <p><strong>Without role:</strong></p>
+        <div class="code-block">
+            <code>
+Prompt: "How can I minimize my tax liability?"
+
+Response: [generic answer]
+            </code>
+        </div>
+
+        <p><strong>With role:</strong></p>
+        <div class="code-block">
+            <code>
+Prompt: "You are an expert tax advisor with 20 years of experience.
+How can I minimize my tax liability?"
+
+Response: [detailed, expert-level answer with specific strategies]
+            </code>
+        </div>
+    </div>
+
+    <h3>System Prompts vs User Prompts</h3>
+
+    <div class="overview-box">
+        <p>Since prompts can get complex with all these techniques, modern chatbots separate prompts into two parts:</p>
+
+        <p><strong>System Prompt (hidden from user):</strong></p>
+        <ul>
+            <li>Role-specific instructions ("You are a helpful tax advisor...")</li>
+            <li>Few-shot examples</li>
+            <li>Output format requirements</li>
+            <li>Chain-of-thought instructions</li>
+            <li>Any other instructions/guidelines</li>
+        </ul>
+
+        <p><strong>User Prompt (visible):</strong></p>
+        <ul>
+            <li>The actual question the user types</li>
+        </ul>
+
+        <p><strong>Combined:</strong> System prompt + User prompt = Final prompt sent to LLM</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Example in ChatGPT</h4>
+        <p>In ChatGPT (and most chatbots), you can set a "System Prompt" or "Custom Instructions"</p>
+
+        <div class="code-block">
+            <code>
+System Prompt:
+"You are a helpful customer service assistant for XYZ Retail Store.
+Always be polite and professional.
+When answering questions about policies, cite the specific policy document.
+If you don't know the answer, say so and offer to connect them with a human."
+
+User Prompt:
+"What is your refund policy?"
+
+[The LLM sees both combined and responds accordingly]
+            </code>
+        </div>
+    </div>
+
+    <h3>Using Prompt Engineering for Domain Adaptation</h3>
+
+    <div class="workflow-diagram">
+        <p><strong>User Query:</strong> "What is the refund policy?"</p>
+        <p>↓</p>
+        <p><strong>Prompt Engineering Logic combines with System Prompt:</strong></p>
+        <p>"Read the following documents and respond to the question:</p>
+        <p>[Include ALL company PDFs, knowledge base, policies, etc.]"</p>
+        <p>↓</p>
+        <p><strong>Enhanced Prompt → LLM → Response</strong></p>
+    </div>
+
+    <div class="solution-box">
+        <p><strong>How to use Prompt Engineering for retail store:</strong></p>
+        <ol>
+            <li>Manually gather all internal documents (PDFs, policies, wikis, etc.)</li>
+            <li>Include ALL this information in the system prompt or concatenate with user query</li>
+            <li>Send combined prompt to LLM</li>
+            <li>LLM now has context to answer domain-specific questions!</li>
+        </ol>
+    </div>
+
+    <h3>Limitation of Prompt Engineering</h3>
+
+    <div class="problem-box">
+        <h4>The Context Window Problem</h4>
+        <p><strong>Problem:</strong> LLMs have a maximum input length (context window)</p>
+
+        <p><strong>Examples:</strong></p>
+        <ul>
+            <li>GPT-3.5: 4,096 tokens (~3,000 words)</li>
+            <li>GPT-4: 8,192 or 32,768 tokens</li>
+            <li>Claude: 100,000 tokens</li>
+        </ul>
+
+        <p><strong>Issue:</strong> Big companies have THOUSANDS or MILLIONS of documents/pages</p>
+        <ul>
+            <li>Can't fit all documents in the prompt</li>
+            <li>Exceeds maximum context window</li>
+            <li>Computationally expensive even if it fits</li>
+        </ul>
+
+        <p><strong>Solution:</strong> This is why we need RAG! ➡️</p>
+    </div>
+
+    <h2>4. Adaptation Technique #3: RAG (Retrieval Augmented Generation)</h2>
+
+    <div class="eli5-box">
+        <h3>🎈 ELI5: What is RAG?</h3>
+        <p>Imagine you have a HUGE library with thousands of books, and someone asks you a question.</p>
+        <p>You can't read ALL the books to them (that would take forever!). Instead:</p>
+        <ol>
+            <li>You SEARCH the library for books about their question</li>
+            <li>You pull out just the 2-3 RELEVANT books</li>
+            <li>You read those books and answer their question</li>
+        </ol>
+        <p>RAG does the same thing! It searches your documents, finds the relevant parts, and ONLY gives those to the LLM.</p>
+    </div>
+
+    <h3>Why RAG?</h3>
+
+    <div class="comparison-table">
+        <tr>
+            <th>Approach</th>
+            <th>How It Works</th>
+            <th>Problem</th>
+        </tr>
+        <tr>
+            <td><strong>Prompt Engineering</strong></td>
+            <td>Include ALL documents in prompt</td>
+            <td>❌ Exceeds context window for large document databases</td>
+        </tr>
+        <tr>
+            <td><strong>RAG</strong></td>
+            <td>Search documents, include only RELEVANT parts in prompt</td>
+            <td>✅ Scalable to millions of documents!</td>
+        </tr>
+    </table>
+
+    <h3>RAG Architecture</h3>
+
+    <div class="workflow-diagram">
+        <p><strong>User Query:</strong> "What is the refund policy?"</p>
+        <p>↓</p>
+        <p><strong>RETRIEVAL Component:</strong></p>
+        <p>Searches document database → Finds relevant chunks</p>
+        <p>↓</p>
+        <p><strong>Retrieved chunks:</strong> [Chunk 1] [Chunk 2] ... [Chunk K]</p>
+        <p>↓</p>
+        <p><strong>GENERATION Component (LLM):</strong></p>
+        <p>User Query + Retrieved Chunks → Answer</p>
+    </div>
+
+    <div class="overview-box">
+        <h3>Two Main Components of RAG</h3>
+
+        <h4>1. Retrieval</h4>
+        <ul>
+            <li>Searches the entire document database</li>
+            <li>Finds the most relevant pieces of text (chunks)</li>
+            <li>Returns top-k most relevant chunks</li>
+            <li><strong>Goal:</strong> Narrow down millions of documents to just a few relevant pieces</li>
+        </ul>
+
+        <h4>2. Generation</h4>
+        <ul>
+            <li>Takes user query + retrieved chunks</li>
+            <li>Uses LLM (+ prompt engineering) to generate answer</li>
+            <li>Answer is based on provided chunks, not hallucination</li>
+        </ul>
+    </div>
+
+    <h2>5. RAG Component: Retrieval</h2>
+
+    <div class="eli5-box">
+        <h3>🎈 ELI5: Retrieval is Like Search</h3>
+        <p>Imagine you're looking for information about dinosaurs in a library.</p>
+        <p>You go to the librarian and say "dinosaurs". The librarian checks their index (like a catalog) and says "Here are all the books about dinosaurs: shelf 3, shelf 7, shelf 12."</p>
+        <p>Retrieval works the same way - it finds relevant documents from a searchable index!</p>
+    </div>
+
+    <h3>Two Steps of Retrieval</h3>
+
+    <div class="overview-box">
+        <h4>Step 1: Build a Searchable Index (Offline - Done Once)</h4>
+        <p>Before we can search, we need to process documents and build an index</p>
+        <p><strong>Input:</strong> Document database (PDFs, images, HTMLs, etc.)</p>
+        <p><strong>Output:</strong> Searchable index (data structure)</p>
+
+        <h4>Step 2: Search the Index (Online - Every Query)</h4>
+        <p>When user asks a question, search the index for relevant content</p>
+        <p><strong>Input:</strong> User query + Index</p>
+        <p><strong>Output:</strong> Top-k relevant chunks</p>
+    </div>
+
+    <h3>Step 1: Building the Index (3 Sub-Steps)</h3>
+
+    <div class="workflow-diagram">
+        <p><strong>Documents → Document Parsing → Document Chunking → Indexing → Index</strong></p>
+    </div>
+
+    <h4>Sub-Step 1: Document Parsing</h4>
+
+    <div class="eli5-box">
+        <h4>🎈 ELI5: Document Parsing</h4>
+        <p>Imagine you have a picture book. Before you can tell someone what's in it, you need to:</p>
+        <ol>
+            <li>Figure out what's on each page (picture? text? title?)</li>
+            <li>Read the words</li>
+            <li>Describe the pictures</li>
+        </ol>
+        <p>Document parsing does this for PDFs - it figures out the layout and extracts all the text and images!</p>
+    </div>
+
+    <div class="overview-box">
+        <p><strong>Goal:</strong> Convert documents (PDFs, HTMLs) → Extracted text content</p>
+
+        <p><strong>Why needed:</strong> LLMs need text input, not PDF files!</p>
+
+        <p><strong>Two main steps:</strong></p>
+        <ol>
+            <li><strong>Layout Detection:</strong> Identify titles, paragraphs, images, tables, figures</li>
+            <li><strong>Text Extraction:</strong> Extract actual text from each detected region</li>
+        </ol>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Document Parsing</h4>
+
+        <p><strong>Input:</strong> A PDF page with title, paragraphs, and a figure</p>
+
+        <p><strong>Layout Detection finds:</strong></p>
+        <ul>
+            <li>Rectangle 1: Title</li>
+            <li>Rectangle 2: Text paragraph</li>
+            <li>Rectangle 3: Image/Figure</li>
+            <li>Rectangle 4: Another text paragraph</li>
+        </ul>
+
+        <p><strong>Text Extraction outputs:</strong></p>
+        <div class="code-block">
+            <code>
+{
+  "type": "title",
+  "text": "Introduction to Machine Learning"
+},
+{
+  "type": "text",
+  "text": "Machine learning is a subset of artificial intelligence..."
+},
+{
+  "type": "image",
+  "coordinates": [x, y, width, height]
+},
+{
+  "type": "text",
+  "text": "There are three main types of machine learning..."
+}
+            </code>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Two Methods for Document Parsing:</strong></p>
+        <ol>
+            <li><strong>Rule-based:</strong> Uses predefined rules (less common, older approach)</li>
+            <li><strong>AI-based:</strong> Uses deep learning models (modern, more accurate)
+                <ul>
+                    <li>OCR (Optical Character Recognition) for text extraction</li>
+                    <li>Layout detection models</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <div class="example-box">
+        <h4>Popular Libraries for Document Parsing</h4>
+
+        <p><strong>1. Dedoc</strong></p>
+        <ul>
+            <li>Automated document parsing library</li>
+            <li>Brings documents to uniform format</li>
+            <li>Handles PDFs, images, Office documents</li>
+        </ul>
+
+        <p><strong>2. LayoutParser</strong></p>
+        <ul>
+            <li>Unified toolkit for deep learning-based document image analysis</li>
+            <li>Detects text regions, titles, tables, figures</li>
+            <li>Works on various document types: PDFs, magazines, historical documents, websites</li>
+        </ul>
+
+        <div class="code-block">
+            <code>
+# Example with LayoutParser
+import layoutparser as lp
+
+# Load a layout detection model
+model = lp.Detectron2LayoutModel('lp://PubLayNet/faster_rcnn_R_50_FPN_3x/config')
+
+# Load PDF page as image
+image = cv2.imread("document_page.jpg")
+
+# Detect layout
+layout = model.detect(image)
+
+# Extract text with OCR
+for block in layout:
+    if block.type == 'Text':
+        text = ocr_agent.detect(image, block)
+        print(f"Text: {text}")
+            </code>
+        </div>
+    </div>
+
+    <h4>Sub-Step 2: Document Chunking</h4>
+
+    <div class="eli5-box">
+        <h4>🎈 ELI5: Document Chunking</h4>
+        <p>Imagine you have a really long story - like a whole Harry Potter book!</p>
+        <p>If someone asks "What spell did Harry use in Chapter 5?", you don't want to give them the ENTIRE book - that's too much!</p>
+        <p>Instead, you break the book into smaller pieces (chapters, or even paragraphs). Then you can give them just the relevant paragraph!</p>
+        <p>Chunking breaks big documents into small, manageable pieces.</p>
+    </div>
+
+    <div class="overview-box">
+        <p><strong>Goal:</strong> Break extracted text into smaller, manageable pieces (chunks)</p>
+
+        <p><strong>Why needed:</strong></p>
+        <ul>
+            <li><strong>Documents are too long:</strong> A whole book would exceed context window</li>
+            <li><strong>Documents are too broad:</strong> Only part of the document is relevant to the query</li>
+            <li><strong>Better precision:</strong> Return only the specific paragraph that answers the question</li>
+        </ul>
+
+        <p><strong>Advantages of chunking:</strong></p>
+        <ol>
+            <li>Handle non-uniform document lengths</li>
+            <li>Improve retrieval precision</li>
+            <li>Overcome LLM context window limitations</li>
+            <li>Optimize computational resources</li>
+        </ol>
+    </div>
+
+    <div class="comparison-table">
+        <tr>
+            <th>Chunking Method</th>
+            <th>How It Works</th>
+            <th>Pros/Cons</th>
+        </tr>
+        <tr>
+            <td><strong>Length-based</strong></td>
+            <td>Split text every N characters</td>
+            <td>❌ May split in middle of sentences</td>
+        </tr>
+        <tr>
+            <td><strong>Regex-based</strong></td>
+            <td>Split at punctuation (., ?, !)</td>
+            <td>⚠️ Better than length, but lacks semantic understanding</td>
+        </tr>
+        <tr>
+            <td><strong>Specialized Splitters</strong></td>
+            <td>Split at semantic boundaries (headers, sections)</td>
+            <td>✅ Best for structured documents (HTML, Markdown, PDF)</td>
+        </tr>
+    </table>
+
+    <div class="example-box">
+        <h4>Langchain Text Splitters</h4>
+
+        <p>Popular library for text chunking with customizable parameters:</p>
+
+        <div class="code-block">
+            <code>
+from langchain.text_splitter import CharacterTextSplitter
+
+text = """This is a sample document about machine learning.
+Machine learning is a subset of artificial intelligence.
+It allows computers to learn from data without being explicitly programmed.
+There are three main types of machine learning: supervised, unsupervised, and reinforcement learning."""
+
+# Create splitter with parameters
+splitter = CharacterTextSplitter(
+    chunk_size=35,      # Target chunk size in characters
+    chunk_overlap=10,   # Overlap between chunks (to avoid cutting context)
+    separator=" "       # Split on spaces
+)
+
+chunks = splitter.split_text(text)
+
+print(chunks)
+# Output:
+# Chunk 1: "This is a sample document about"
+# Chunk 2: "about machine learning. Machine"  (note overlap: "about")
+# Chunk 3: "Machine learning is a subset of"
+# ...
+            </code>
+        </div>
+
+        <p><strong>Key hyperparameters:</strong></p>
+        <ul>
+            <li><strong>chunk_size:</strong> Target size of each chunk</li>
+            <li><strong>chunk_overlap:</strong> How much chunks should overlap (prevents cutting important context)</li>
+            <li><strong>separator:</strong> Where to split (space, newline, etc.)</li>
+        </ul>
+    </div>
+
+    <h4>Sub-Step 3: Indexing</h4>
+
+    <div class="eli5-box">
+        <h4>🎈 ELI5: Indexing</h4>
+        <p>Imagine you have 1000 toy cars all mixed up in a big box. Finding a specific red race car would take forever!</p>
+        <p>But if you organize them on shelves by color and type, you can find the red race car super fast!</p>
+        <p>Indexing organizes chunks so we can search them quickly.</p>
+    </div>
+
+    <div class="overview-box">
+        <p><strong>Goal:</strong> Store chunks in a data structure that's easy to search</p>
+
+        <p><strong>Input:</strong> Text chunks (from chunking step)</p>
+        <p><strong>Output:</strong> Index (searchable data structure)</p>
+
+        <p><strong>Types of indexing:</strong></p>
+        <ul>
+            <li>Keyword-based indexing</li>
+            <li>Full-text indexing</li>
+            <li>Knowledge graph-based indexing</li>
+            <li><strong>Vector-based indexing</strong> ← Most common for RAG!</li>
+        </ul>
+    </div>
+
+    <h4>Text-Based Indexing (Keyword/Full-Text)</h4>
+
+    <div class="overview-box">
+        <p><strong>How it works:</strong> Match query terms with document content (partial or exact match)</p>
+
+        <p><strong>Example tool:</strong> Elasticsearch</p>
+
+        <p><strong>Example:</strong></p>
+        <ul>
+            <li>Query: "refund policy"</li>
+            <li>Search: Find all chunks containing "refund" AND/OR "policy"</li>
+            <li>Return: Chunks with exact or partial keyword matches</li>
+        </ul>
+    </div>
+
+    <div class="problem-box">
+        <p><strong>Problem with text-based indexing:</strong></p>
+        <ul>
+            <li>❌ Doesn't understand synonyms (search "return" won't find "refund")</li>
+            <li>❌ Doesn't capture semantic meaning</li>
+            <li>❌ Requires exact keyword matches</li>
+        </ul>
+
+        <p><strong>Solution:</strong> Vector-based indexing! ✅</p>
+    </div>
+
+    <h4>Vector-Based Indexing (Embeddings)</h4>
+
+    <div class="eli5-box">
+        <h4>🎈 ELI5: What are Embeddings?</h4>
+        <p>Imagine you could describe every word by its "personality" using numbers.</p>
+        <p>For example:</p>
+        <ul>
+            <li>"Cat" = [cute: 8, fluffy: 9, animal: 10, vehicle: 0]</li>
+            <li>"Dog" = [cute: 9, fluffy: 7, animal: 10, vehicle: 0]</li>
+            <li>"Car" = [cute: 1, fluffy: 0, animal: 0, vehicle: 10]</li>
+        </ul>
+        <p>Now you can see that "cat" and "dog" have similar numbers (they're both cute fluffy animals!), but "car" is very different.</p>
+        <p>Embeddings do this with hundreds or thousands of numbers to capture the MEANING of text!</p>
+    </div>
+
+    <div class="overview-box">
+        <p><strong>Embedding Model:</strong> An ML model that maps text → vector in high-dimensional space</p>
+
+        <p><strong>Key property:</strong> Texts with similar meanings → nearby vectors in embedding space</p>
+
+        <p><strong>Example:</strong></p>
+        <ul>
+            <li>"refund policy" → [0.2, 0.8, 0.1, ..., 0.5]</li>
+            <li>"return policy" → [0.21, 0.79, 0.11, ..., 0.51] (very close!)</li>
+            <li>"shipping time" → [0.7, 0.1, 0.9, ..., 0.2] (far away)</li>
+        </ul>
+    </div>
+
+    <div class="example-box">
+        <h4>Historical Context: Word2Vec (2013)</h4>
+
+        <p><strong>First major embedding model!</strong></p>
+
+        <p>Discovered that after training, word embeddings have meaningful relationships:</p>
+        <ul>
+            <li><strong>Synonyms are nearby:</strong> "happy" is close to "joyful"</li>
+            <li><strong>Analogies work:</strong>
+                <ul>
+                    <li>king - man + woman ≈ queen</li>
+                    <li>Paris - France + Italy ≈ Rome</li>
+                </ul>
+            </li>
+        </ul>
+
+        <p>This was revolutionary - it showed we can capture MEANING with numbers!</p>
+    </div>
+
+    <h4>How Vector Indexing Works</h4>
+
+    <div class="workflow-diagram">
+        <p><strong>Step 1: Encode all chunks</strong></p>
+        <p>Chunk 1 → Embedding Model → [0.1, 0.5, 0.2, ...]</p>
+        <p>Chunk 2 → Embedding Model → [0.3, 0.7, 0.1, ...]</p>
+        <p>Chunk N → Embedding Model → [0.6, 0.2, 0.9, ...]</p>
+        <br>
+        <p><strong>Step 2: Store in index table</strong></p>
+        <table class="comparison-table">
+            <tr>
+                <th>Chunk ID</th>
+                <th>Text</th>
+                <th>Embedding</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>"To learn more about our products, contact..."</td>
+                <td>[0.1, 0.5, 0.2, ..., 0.4]</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>"Our refund policy allows returns within 30 days..."</td>
+                <td>[0.3, 0.7, 0.1, ..., 0.6]</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="example-box">
+        <h4>Popular Embedding Models</h4>
+
+        <table class="comparison-table">
+            <tr>
+                <th>Model</th>
+                <th>Provider</th>
+                <th>Output Dimension</th>
+            </tr>
+            <tr>
+                <td>text-embedding-3-large</td>
+                <td>OpenAI</td>
+                <td>3,072</td>
+            </tr>
+            <tr>
+                <td>text-embedding-3-small</td>
+                <td>OpenAI</td>
+                <td>1,536</td>
+            </tr>
+            <tr>
+                <td>text-embedding-004</td>
+                <td>Google (Gemini)</td>
+                <td>768</td>
+            </tr>
+        </table>
+
+        <div class="code-block">
+            <code>
+# Example with OpenAI embeddings
+import openai
+
+text = "What is your refund policy?"
+
+response = openai.Embedding.create(
+    model="text-embedding-3-small",
+    input=text
+)
+
+embedding = response['data'][0]['embedding']
+print(len(embedding))  # 1536 numbers
+print(embedding[:5])   # [0.123, -0.456, 0.789, ...]
+            </code>
+        </div>
+    </div>
+
+    <h4>Handling Images in Index</h4>
+
+    <div class="overview-box">
+        <p><strong>Problem:</strong> What if chunks contain images (diagrams, charts, figures)?</p>
+
+        <p><strong>Two Solutions:</strong></p>
+    </div>
+
+    <div class="solution-box">
+        <h4>Option 1: Image Embedding Model (Shared Embedding Space)</h4>
+
+        <p><strong>Example: CLIP (OpenAI, 2021)</strong></p>
+
+        <p><strong>How CLIP works:</strong></p>
+        <ul>
+            <li>Has TWO encoders: Text Encoder + Image Encoder</li>
+            <li>Trained on millions of (image, caption) pairs</li>
+            <li>Both encoders map to the SAME embedding space</li>
+            <li>Similar images and texts have nearby embeddings</li>
+        </ul>
+
+        <p><strong>For RAG:</strong></p>
+        <ul>
+            <li>Use CLIP's Text Encoder for text chunks</li>
+            <li>Use CLIP's Image Encoder for image chunks</li>
+            <li>Both stored in same index!</li>
+            <li>Query can retrieve both text AND relevant images</li>
+        </ul>
+    </div>
+
+    <div class="solution-box">
+        <h4>Option 2: Image Captioning Model</h4>
+
+        <p><strong>How it works:</strong></p>
+        <ol>
+            <li>Pass image to captioning model</li>
+            <li>Model generates text description: "The image shows a cat sitting on a wooden table"</li>
+            <li>Use text embedding model to encode the caption</li>
+            <li>Store caption embedding in index (treat as text chunk)</li>
+        </ol>
+
+        <p><strong>Advantage:</strong> Can use any text embedding model (not limited to CLIP)</p>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Final Result:</strong> We have TWO indexes</p>
+        <ul>
+            <li><strong>Text Index:</strong> Table of (chunk_id, text, embedding)</li>
+            <li><strong>Image Index:</strong> Table of (chunk_id, image/caption, embedding)</li>
+        </ul>
+        <p>Both can be searched to find relevant content!</p>
+    </div>
+
+    <h2>6. RAG Component: Search at Runtime</h2>
+
+    <div class="eli5-box">
+        <h3>🎈 ELI5: Searching the Index</h3>
+        <p>Remember when we organized our toy cars on shelves? Now when you want to find a red race car, you:</p>
+        <ol>
+            <li>Go to the "red" section</li>
+            <li>Look for "race cars"</li>
+            <li>Pick the ones that match best</li>
+        </ol>
+        <p>Searching the embedding index works similarly - we find the vectors (chunks) that are "closest" to our query!</p>
+    </div>
+
+    <h3>How Search Works</h3>
+
+    <div class="workflow-diagram">
+        <p><strong>Step 1:</strong> User query → Text Encoder → Query Embedding</p>
+        <p>"What is the refund policy?" → [0.3, 0.7, 0.1, ..., 0.6]</p>
+        <br>
+        <p><strong>Step 2:</strong> Compare query embedding with ALL chunk embeddings in index</p>
+        <p>Find the k closest embeddings (nearest neighbors)</p>
+        <br>
+        <p><strong>Step 3:</strong> Return the corresponding chunks</p>
+        <p>Retrieved: Chunk 1, Chunk 2, ..., Chunk K</p>
+    </div>
+
+    <div class="overview-box">
+        <p><strong>This is a Nearest Neighbor Search problem!</strong></p>
+
+        <p><strong>Given:</strong></p>
+        <ul>
+            <li>Query embedding (1 point in high-dimensional space)</li>
+            <li>Index with millions of chunk embeddings (millions of points)</li>
+        </ul>
+
+        <p><strong>Goal:</strong> Find top-k closest points to query</p>
+
+        <p><strong>Distance metrics:</strong></p>
+        <ul>
+            <li>Euclidean distance</li>
+            <li>Cosine distance (most common for embeddings)</li>
+        </ul>
+    </div>
+
+    <h3>Exact vs Approximate Nearest Neighbor</h3>
+
+    <h4>Exact Nearest Neighbor (Exact NN)</h4>
+
+    <div class="overview-box">
+        <p><strong>How it works:</strong> Compare query with EVERY single point in the index</p>
+
+        <p><strong>Guarantee:</strong> Returns the EXACT top-k closest points</p>
+    </div>
+
+    <div class="problem-box">
+        <p><strong>Problem: Too slow!</strong></p>
+        <ul>
+            <li>Large document databases → millions/billions of chunks</li>
+            <li>Comparing with billions of points every query = very expensive</li>
+            <li>Not practical for real-time search</li>
+        </ul>
+    </div>
+
+    <h4>Approximate Nearest Neighbor (ANN)</h4>
+
+    <div class="solution-box">
+        <p><strong>Key idea:</strong> We don't need the EXACT top-k, just "good enough" neighbors</p>
+
+        <p><strong>Trade-off:</strong> Sacrifice small amount of accuracy for HUGE speed improvement</p>
+
+        <p><strong>In practice:</strong> Works great for most use cases!</p>
+    </div>
+
+    <h3>ANN Algorithm Categories</h3>
+
+    <h4>1. Clustering-Based ANN</h4>
+
+    <div class="eli5-box">
+        <h4>🎈 ELI5: Clustering</h4>
+        <p>Imagine your toys are scattered everywhere. You organize them into groups: "action figures" in one corner, "cars" in another, "dolls" in another.</p>
+        <p>Now when you want a car, you only search the "cars" corner, not the whole room!</p>
+    </div>
+
+    <div class="overview-box">
+        <p><strong>Preprocessing:</strong> Cluster all points into groups (e.g., 100 clusters)</p>
+        <p><strong>Each cluster has:</strong> A representative point (centroid)</p>
+
+        <p><strong>At query time:</strong></p>
+        <ol>
+            <li>Find which cluster the query belongs to (compare with centroids)</li>
+            <li>Search ONLY within that cluster</li>
+            <li>Return top-k from that cluster</li>
+        </ol>
+
+        <p><strong>Speed improvement:</strong> Instead of searching 1 billion points, search only 10 million points in one cluster!</p>
+    </div>
+
+    <h4>2. Tree-Based ANN</h4>
+
+    <div class="eli5-box">
+        <h4>🎈 ELI5: Trees</h4>
+        <p>It's like the game "20 Questions" where you narrow down by asking yes/no questions:</p>
+        <ul>
+            <li>"Is it bigger than a car?" → No → Narrow to small things</li>
+            <li>"Is it fluffy?" → Yes → Narrow to fluffy animals</li>
+            <li>"Does it meow?" → Yes → It's a cat!</li>
+        </ul>
+        <p>Trees work the same way - each question splits the space in half until you find your answer!</p>
+    </div>
+
+    <div class="overview-box">
+        <p><strong>Preprocessing:</strong> Partition data into a tree structure</p>
+        <p><strong>Each node:</strong> Represents a region of space</p>
+
+        <p><strong>At query time:</strong></p>
+        <ol>
+            <li>Start at root of tree</li>
+            <li>At each node, decide which branch to follow</li>
+            <li>Traverse down to a leaf node (specific region)</li>
+            <li>Search only points in that region</li>
+        </ol>
+    </div>
+
+    <h4>3. Locality-Sensitive Hashing (LSH)</h4>
+
+    <div class="eli5-box">
+        <h4>🎈 ELI5: Hashing</h4>
+        <p>Imagine you have a magic sorting hat (like in Harry Potter!) that puts similar people in the same house.</p>
+        <p>If two kids are similar, they go to the same house. Then when you want to find someone's friends, you just look in their house!</p>
+    </div>
+
+    <div class="overview-box">
+        <p><strong>Key idea:</strong> Use special hash functions where similar inputs → similar hash outputs</p>
+
+        <p><strong>Preprocessing:</strong></p>
+        <ol>
+            <li>Define hash function that maps similar points to same bucket</li>
+            <li>Hash all chunks → assign to buckets</li>
+        </ol>
+
+        <p><strong>At query time:</strong></p>
+        <ol>
+            <li>Hash the query → find its bucket</li>
+            <li>Search only points in that bucket</li>
+        </ol>
+    </div>
+
+    <h3>Complete Search Workflow</h3>
+
+    <div class="workflow-diagram">
+        <p><strong>User Query:</strong> "What is the refund policy?"</p>
+        <p>↓</p>
+        <p><strong>Text Encoder:</strong> Convert to embedding</p>
+        <p>↓</p>
+        <p><strong>ANN Algorithm:</strong> Find closest chunk embeddings</p>
+        <p>(e.g., clustering → find cluster → search within cluster)</p>
+        <p>↓</p>
+        <p><strong>Return Top-K Chunks:</strong></p>
+        <ul>
+            <li>Chunk 1: "Our refund policy allows returns within 30 days..."</li>
+            <li>Chunk 2: "To initiate a refund, contact customer service..."</li>
+            <li>Chunk 3: "Refunds are processed within 5-7 business days..."</li>
+        </ul>
+    </div>
+
+    <h3>Popular Library: FAISS (Facebook AI Similarity Search)</h3>
+
+    <div class="example-box">
+        <h4>FAISS</h4>
+
+        <p><strong>What it is:</strong> Library for efficient similarity search and clustering of dense vectors</p>
+        <p><strong>Developed by:</strong> Meta (Facebook AI)</p>
+        <p><strong>Features:</strong> Multiple ANN algorithms, GPU support, highly optimized</p>
+
+        <div class="code-block">
+            <code>
+import faiss
+import numpy as np
+
+# Assume we have embeddings for chunks
+chunk_embeddings = np.random.random((1000000, 768)).astype('float32')  # 1M chunks, 768-dim
+
+# Build index
+dimension = 768
+index = faiss.IndexFlatL2(dimension)  # L2 (Euclidean) distance
+index.add(chunk_embeddings)  # Add all chunk embeddings
+
+# Query
+query_embedding = np.random.random((1, 768)).astype('float32')
+
+k = 5  # Find top-5 nearest neighbors
+distances, indices = index.search(query_embedding, k)
+
+print(f"Top {k} most similar chunks: {indices}")
+print(f"Distances: {distances}")
+
+# Retrieve actual chunks
+for i in indices[0]:
+    print(f"Chunk {i}: {chunks[i]}")
+            </code>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Key Takeaway: Retrieval is Search</strong></p>
+        <ul>
+            <li>Build index offline (parse → chunk → embed → store)</li>
+            <li>Search at query time (embed query → ANN search → return top-k)</li>
+            <li>Use ANN for efficiency (clustering, trees, LSH)</li>
+            <li>Libraries like FAISS make it easy!</li>
+        </ul>
+    </div>
+
+    <h2>7. RAG Component: Generation</h2>
+
+    <div class="eli5-box">
+        <h3>🎈 ELI5: Generation</h3>
+        <p>Now that we found the right books in the library (retrieval), we need to READ them and answer the question!</p>
+        <p>The LLM is like a really smart reader who takes the books you found and writes a nice answer based on what's in those books.</p>
+    </div>
+
+    <h3>Basic Generation</h3>
+
+    <div class="workflow-diagram">
+        <p><strong>Inputs:</strong></p>
+        <ul>
+            <li>User Query: "What is the refund policy?"</li>
+            <li>Retrieved Chunks: [Chunk 1, Chunk 2, Chunk 3]</li>
+        </ul>
+        <p>↓</p>
+        <p><strong>Combine into prompt:</strong></p>
+        <p>Context: [Chunk 1] [Chunk 2] [Chunk 3]</p>
+        <p>Question: What is the refund policy?</p>
+        <p>↓</p>
+        <p><strong>LLM generates answer based on context</strong></p>
+    </div>
+
+    <h3>Enhanced Generation with Prompt Engineering</h3>
+
+    <div class="solution-box">
+        <p><strong>Better approach:</strong> Combine retrieval with prompt engineering techniques!</p>
+
+        <p><strong>Components:</strong></p>
+        <ol>
+            <li>Retrieved content (from retrieval)</li>
+            <li>Prompt engineering (role, instructions, CoT, etc.)</li>
+            <li>LLM</li>
+        </ol>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Enhanced RAG Prompt</h4>
+
+        <div class="code-block">
+            <code>
+System Prompt:
+You are a helpful assistant who answers [Company Name] internal questions.
+
+Instructions:
+- Your task is to deliver a concise and accurate response
+- Always cite which document you got the information from
+- If the answer is not in the provided context, say "I don't know"
+- Never make up information
+
+Few-shot examples:
+Q: What is our vacation policy?
+A: According to HR_Policy.pdf, employees get 15 days of vacation per year.
+
+Q: How do I submit an expense report?
+A: Based on Finance_Guide.pdf, submit expense reports through the internal portal.
+
+Reasoning instruction:
+If there is a reasoning process to generate the response, think step by step
+and put your steps in bullet points.
+
+---
+
+Context from retrieved documents:
+[Chunk 1: "Our refund policy allows customers to return items within 30 days..."]
+[Chunk 2: "To initiate a refund, contact customer service at 800-123-4567..."]
+[Chunk 3: "Refunds are processed within 5-7 business days..."]
+
+User Question:
+What is the refund policy?
+
+---
+
+Answer:
+            </code>
+        </div>
+
+        <p>The LLM now has:</p>
+        <ul>
+            <li>Role (helpful assistant)</li>
+            <li>Clear instructions (cite sources, don't hallucinate)</li>
+            <li>Examples (few-shot)</li>
+            <li>Reasoning guidance (CoT)</li>
+            <li>Relevant context (retrieved chunks)</li>
+        </ul>
+    </div>
+
+    <h3>Advanced: RAFT (Retrieval-Augmented Fine-Tuning)</h3>
+
+    <div class="problem-box">
+        <h4>Problem: What if retrieved chunks aren't perfect?</h4>
+        <p>Sometimes retrieval returns some irrelevant documents along with relevant ones.</p>
+        <p>The LLM might get confused and use irrelevant information!</p>
+    </div>
+
+    <div class="solution-box">
+        <h4>Solution: Fine-tune the LLM to distinguish relevant from irrelevant documents</h4>
+
+        <p><strong>RAFT Paper:</strong> "Retrieval-Augmented Fine-Tuning" (2024)</p>
+
+        <p><strong>Key idea:</strong></p>
+        <ol>
+            <li>Create training data with BOTH relevant and irrelevant documents</li>
+            <li>Fine-tune LLM to:
+                <ul>
+                    <li>Generate answers based on RELEVANT documents</li>
+                    <li>IGNORE irrelevant documents</li>
+                </ul>
+            </li>
+        </ol>
+
+        <p><strong>Result:</strong> LLM becomes robust to noisy retrieval!</p>
+    </div>
+
+    <div class="example-box">
+        <h4>RAFT Training Example</h4>
+
+        <p><strong>Training sample:</strong></p>
+        <div class="code-block">
+            <code>
+Context:
+[RELEVANT] "Our refund policy allows returns within 30 days of purchase."
+[IRRELEVANT] "Shipping typically takes 5-7 business days."
+[IRRELEVANT] "We offer free shipping on orders over $50."
+[RELEVANT] "To initiate a refund, contact customer service."
+
+Question: What is the refund policy?
+
+Target Answer: "According to our policy, you can return items within 30 days
+of purchase. To initiate a refund, contact customer service."
+            </code>
+        </div>
+
+        <p>The model learns to focus on relevant docs and ignore irrelevant ones!</p>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Generation Best Practices:</strong></p>
+        <ul>
+            <li>Use LLM (general-purpose or fine-tuned)</li>
+            <li>Combine with prompt engineering (role, instructions, CoT)</li>
+            <li>Optionally fine-tune with RAFT for robustness</li>
+            <li>Always include retrieved context in prompt</li>
+        </ul>
+    </div>
+
+    <h2>8. RAG Evaluation</h2>
+
+    <div class="eli5-box">
+        <h3>🎈 ELI5: Evaluating RAG</h3>
+        <p>Imagine you asked your friend to help you with homework. You want to check:</p>
+        <ol>
+            <li>Did they find the right books? (Retrieval quality)</li>
+            <li>Did they actually READ the books or just make stuff up? (Faithfulness)</li>
+            <li>Is their answer actually answering YOUR question? (Answer relevance)</li>
+            <li>Is their answer CORRECT? (Answer correctness)</li>
+        </ol>
+        <p>RAG evaluation checks all these things!</p>
+    </div>
+
+    <h3>Evaluation is Complex!</h3>
+
+    <div class="overview-box">
+        <p><strong>Why complex:</strong> RAG has multiple components</p>
+        <ul>
+            <li>Retrieval quality</li>
+            <li>Generation quality</li>
+            <li>End-to-end quality</li>
+        </ul>
+
+        <p><strong>We need multiple evaluation aspects!</strong></p>
+    </div>
+
+    <div class="workflow-diagram">
+        <p><strong>RAG Components:</strong></p>
+        <p>Query → Retrieval → Context → Generation → Answer</p>
+        <br>
+        <p><strong>Evaluation Aspects:</strong></p>
+        <ul>
+            <li>Context Relevance: Query ↔ Context</li>
+            <li>Faithfulness: Context ↔ Answer</li>
+            <li>Answer Relevance: Query ↔ Answer</li>
+            <li>Answer Correctness: Answer ↔ Ground Truth</li>
+        </ul>
+    </div>
+
+    <h3>1. Context Relevance</h3>
+
+    <div class="overview-box">
+        <p><strong>What it measures:</strong> How well does retrieval find relevant documents?</p>
+
+        <p><strong>Question:</strong> Given the query, are the retrieved chunks actually relevant?</p>
+
+        <p><strong>This evaluates:</strong> Retrieval component quality</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Context Relevance Metrics (Ranking Metrics)</h4>
+
+        <table class="comparison-table">
+            <tr>
+                <th>Metric</th>
+                <th>What It Measures</th>
+            </tr>
+            <tr>
+                <td><strong>Hit Rate</strong></td>
+                <td>Percentage of queries where at least 1 relevant document is in top-k</td>
+            </tr>
+            <tr>
+                <td><strong>MRR (Mean Reciprocal Rank)</strong></td>
+                <td>Average of 1/rank of first relevant document</td>
+            </tr>
+            <tr>
+                <td><strong>NDCG (Normalized Discounted Cumulative Gain)</strong></td>
+                <td>Ranking quality considering position and relevance</td>
+            </tr>
+            <tr>
+                <td><strong>Precision@k</strong></td>
+                <td>Percentage of top-k results that are relevant</td>
+            </tr>
+        </table>
+
+        <p><strong>Example:</strong></p>
+        <div class="code-block">
+            <code>
+Query: "What is the refund policy?"
+Retrieved (top-5):
+1. "Our refund policy..." ✅ RELEVANT
+2. "Shipping takes 5-7 days..." ❌ IRRELEVANT
+3. "Contact customer service..." ⚠️ SOMEWHAT RELEVANT
+4. "Free shipping over $50..." ❌ IRRELEVANT
+5. "Returns within 30 days..." ✅ RELEVANT
+
+Hit Rate: 1 (at least one relevant doc found)
+Precision@5: 2/5 = 0.4 (40% are relevant)
+MRR: 1/1 = 1.0 (first result is relevant)
+            </code>
+        </div>
+    </div>
+
+    <h3>2. Faithfulness</h3>
+
+    <div class="overview-box">
+        <p><strong>What it measures:</strong> Is the generated answer faithful to the retrieved context?</p>
+
+        <p><strong>Question:</strong> Did the LLM actually use the context, or did it hallucinate?</p>
+
+        <p><strong>This evaluates:</strong> Whether generation is grounded in retrieved documents</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Faithfulness Evaluation</h4>
+
+        <p><strong>Context:</strong> "Our refund policy allows returns within 30 days of purchase."</p>
+
+        <p><strong>✅ Faithful Answer:</strong> "You can return items within 30 days of purchase."</p>
+        <p><em>Uses information directly from context</em></p>
+
+        <p><strong>❌ Unfaithful Answer:</strong> "You can return items within 60 days of purchase."</p>
+        <p><em>Contradicts the context - hallucination!</em></p>
+    </div>
+
+    <div class="overview-box">
+        <p><strong>Evaluation Methods:</strong></p>
+        <ul>
+            <li><strong>Human evaluation:</strong> Humans check if answer matches context (gold standard but expensive)</li>
+            <li><strong>Fact-checking tools:</strong> Automated tools to verify factual consistency</li>
+            <li><strong>Consistency checks:</strong> NLI (Natural Language Inference) models check if answer is entailed by context</li>
+        </ul>
+    </div>
+
+    <h3>3. Answer Relevance</h3>
+
+    <div class="overview-box">
+        <p><strong>What it measures:</strong> Is the answer relevant to the user's query?</p>
+
+        <p><strong>Question:</strong> Does the answer actually address what the user asked?</p>
+
+        <p><strong>This evaluates:</strong> Whether the system understood the query</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Answer Relevance Examples</h4>
+
+        <p><strong>Query:</strong> "What is the refund policy?"</p>
+
+        <p><strong>✅ Relevant Answer:</strong> "Our refund policy allows returns within 30 days of purchase."</p>
+        <p><em>Directly answers the question</em></p>
+
+        <p><strong>❌ Irrelevant Answer:</strong> "We offer free shipping on all orders."</p>
+        <p><em>Doesn't answer the question about refunds</em></p>
+    </div>
+
+    <h3>4. Answer Correctness</h3>
+
+    <div class="overview-box">
+        <p><strong>What it measures:</strong> Is the answer factually correct?</p>
+
+        <p><strong>Question:</strong> Does the answer match the ground truth / expected answer?</p>
+
+        <p><strong>This evaluates:</strong> Overall system quality</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Answer Correctness Metrics (Text Similarity)</h4>
+
+        <table class="comparison-table">
+            <tr>
+                <th>Metric</th>
+                <th>What It Measures</th>
+            </tr>
+            <tr>
+                <td><strong>BLEU</strong></td>
+                <td>N-gram overlap between generated and reference answer</td>
+            </tr>
+            <tr>
+                <td><strong>ROUGE</strong></td>
+                <td>Recall-oriented n-gram matching</td>
+            </tr>
+            <tr>
+                <td><strong>METEOR</strong></td>
+                <td>Accounts for synonyms and stemming</td>
+            </tr>
+            <tr>
+                <td><strong>BERTScore</strong></td>
+                <td>Semantic similarity using embeddings</td>
+            </tr>
+        </table>
+
+        <p><strong>Example:</strong></p>
+        <div class="code-block">
+            <code>
+Ground Truth: "You can return items within 30 days of purchase."
+Generated: "Our policy allows returns within 30 days."
+
+BLEU: High (many matching words)
+ROUGE: High (good recall)
+BERTScore: Very high (semantically very similar)
+            </code>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Complete RAG Evaluation Strategy:</strong></p>
+        <ol>
+            <li><strong>Context Relevance:</strong> Use Hit Rate, Precision@k, NDCG to evaluate retrieval</li>
+            <li><strong>Faithfulness:</strong> Use human eval or NLI models to check grounding</li>
+            <li><strong>Answer Relevance:</strong> Check if answer addresses the query</li>
+            <li><strong>Answer Correctness:</strong> Use BLEU, ROUGE, BERTScore against ground truth</li>
+        </ol>
+
+        <p><strong>All four aspects are important!</strong> A good RAG system needs to excel at all of them.</p>
+    </div>
+
+    <h2>9. Complete RAG System Design</h2>
+
+    <div class="eli5-box">
+        <h3>🎈 ELI5: Putting It All Together</h3>
+        <p>Imagine you built a super smart homework helper robot:</p>
+        <ol>
+            <li><strong>Safety check:</strong> Make sure the question is appropriate</li>
+            <li><strong>Understand the question:</strong> Make sure the question is clear</li>
+            <li><strong>Search the library:</strong> Find the right books</li>
+            <li><strong>Read and answer:</strong> Use the books to write an answer</li>
+            <li><strong>Safety check again:</strong> Make sure the answer is appropriate</li>
+            <li><strong>Give the answer:</strong> Show the student</li>
+        </ol>
+        <p>That's exactly how a complete RAG system works!</p>
+    </div>
+
+    <h3>Complete RAG Pipeline</h3>
+
+    <div class="workflow-diagram">
+        <h4>Offline: Index Building</h4>
+        <p><strong>Document Database (PDFs, Images, HTMLs, etc.)</strong></p>
+        <p>↓</p>
+        <p><strong>Document Parsing & Chunking</strong></p>
+        <p>↓</p>
+        <p><strong>Embedding Models (Text Encoder + Image Encoder)</strong></p>
+        <p>↓</p>
+        <p><strong>Indexes Stored:</strong></p>
+        <ul>
+            <li>Text Index (table: chunk_id, text, embedding)</li>
+            <li>Image Index (table: chunk_id, image, embedding)</li>
+        </ul>
+    </div>
+
+    <div class="workflow-diagram">
+        <h4>Online: Query Processing</h4>
+        <p><strong>1. User Query</strong></p>
+        <p>↓</p>
+        <p><strong>2. Input Guardrails / Safety Filtering</strong></p>
+        <p><em>Check if query is safe to process</em></p>
+        <p>↓</p>
+        <p><strong>3. Query Rewriting / Enhancement</strong></p>
+        <p><em>Fix grammar, remove ambiguity, expand query</em></p>
+        <p>↓</p>
+        <p><strong>4. Text Encoder</strong></p>
+        <p><em>Convert enhanced query to embedding</em></p>
+        <p>↓</p>
+        <p><strong>5. Retrieval (ANN Search)</strong></p>
+        <p><em>Search indexes for top-k relevant chunks</em></p>
+        <p>↓</p>
+        <p><strong>6. Prompt Engineering</strong></p>
+        <p><em>Combine query + retrieved chunks + instructions</em></p>
+        <p>↓</p>
+        <p><strong>7. LLM Generation</strong></p>
+        <p><em>Generate answer based on prompt</em></p>
+        <p>↓</p>
+        <p><strong>8. Output Guardrails / Safety Filtering</strong></p>
+        <p><em>Check if answer is safe, unbiased, appropriate</em></p>
+        <p>↓</p>
+        <p><strong>9. Final Response to User</strong></p>
+    </div>
+
+    <h3>Component Details</h3>
+
+    <h4>Input/Output Guardrails</h4>
+
+    <div class="overview-box">
+        <p><strong>Purpose:</strong> Ensure system safety and appropriate behavior</p>
+
+        <p><strong>Input Guardrails check:</strong></p>
+        <ul>
+            <li>Is the query asking for harmful content?</li>
+            <li>Is the query trying to jailbreak the system?</li>
+            <li>Is the query appropriate for the domain?</li>
+        </ul>
+
+        <p><strong>Output Guardrails check:</strong></p>
+        <ul>
+            <li>Is the answer biased?</li>
+            <li>Does the answer contain harmful content?</li>
+            <li>Is the answer appropriate?</li>
+        </ul>
+
+        <p><strong>Action if flagged:</strong> Reject the request or show a safety message</p>
+    </div>
+
+    <h4>Query Rewriting</h4>
+
+    <div class="overview-box">
+        <p><strong>Purpose:</strong> Improve/enhance the user query for better retrieval</p>
+
+        <p><strong>What it fixes:</strong></p>
+        <ul>
+            <li>Grammar errors</li>
+            <li>Ambiguous language</li>
+            <li>Missing context</li>
+            <li>Typos</li>
+        </ul>
+
+        <p><strong>Techniques:</strong></p>
+        <ul>
+            <li>Query expansion (add synonyms)</li>
+            <li>Query clarification</li>
+            <li>Spell correction</li>
+        </ul>
+    </div>
+
+    <div class="example-box">
+        <h4>Query Rewriting Example</h4>
+
+        <p><strong>Original:</strong> "refnd polcy?"</p>
+        <p><strong>Rewritten:</strong> "What is the refund policy?"</p>
+        <br>
+        <p><strong>Original:</strong> "how to return"</p>
+        <p><strong>Expanded:</strong> "how to return items, return policy, refund process"</p>
+    </div>
+
+    <h3>Advantages of RAG</h3>
+
+    <div class="solution-box">
+        <p><strong>✅ Easy to update knowledge:</strong> Just add/remove documents from index</p>
+        <p><strong>✅ Scalable:</strong> Can handle millions of documents</p>
+        <p><strong>✅ No retraining needed:</strong> Unlike fine-tuning, just update the index</p>
+        <p><strong>✅ Works with live data:</strong> Can integrate web search for real-time info</p>
+        <p><strong>✅ Transparent:</strong> Can show which documents were used</p>
+        <p><strong>✅ Reduced hallucination:</strong> Answers grounded in retrieved documents</p>
+    </div>
+
+    <h3>RAG for Live Data</h3>
+
+    <div class="overview-box">
+        <p><strong>Extension:</strong> RAG can also retrieve LIVE information from the web!</p>
+
+        <p><strong>Workflow:</strong></p>
+        <ol>
+            <li>User asks: "What's the weather today?"</li>
+            <li>System detects need for live data</li>
+            <li>Calls web search API / weather API</li>
+            <li>Retrieves current weather information</li>
+            <li>Includes in context for LLM</li>
+            <li>LLM generates answer with up-to-date info</li>
+        </ol>
+
+        <p><em>This is called "Tool Calling" and will be covered in Week 3!</em></p>
+    </div>
+
+    <h2>Summary: Three Adaptation Techniques</h2>
+
+    <table class="comparison-table">
+        <tr>
+            <th>Technique</th>
+            <th>How It Works</th>
+            <th>Pros</th>
+            <th>Cons</th>
+            <th>Best For</th>
+        </tr>
+        <tr>
+            <td><strong>Fine-Tuning</strong></td>
+            <td>Continue training LLM on documents</td>
+            <td>
+                • Most accurate<br>
+                • Knowledge "baked in"<br>
+                • Fast at inference
+            </td>
+            <td>
+                • Expensive training<br>
+                • Hard to update<br>
+                • Requires retraining
+            </td>
+            <td>Static domain knowledge that rarely changes</td>
+        </tr>
+        <tr>
+            <td><strong>Prompt Engineering</strong></td>
+            <td>Include documents in prompt</td>
+            <td>
+                • No training needed<br>
+                • Easy to update<br>
+                • Very flexible
+            </td>
+            <td>
+                • Context window limits<br>
+                • Expensive at inference<br>
+                • Doesn't scale
+            </td>
+            <td>Small document databases (fits in context)</td>
+        </tr>
+        <tr>
+            <td><strong>RAG</strong></td>
+            <td>Retrieve relevant docs, then generate</td>
+            <td>
+                • Scalable<br>
+                • Easy to update<br>
+                • Works with live data<br>
+                • Reduces hallucination
+            </td>
+            <td>
+                • Complex system<br>
+                • Retrieval quality critical<br>
+                • Two-stage latency
+            </td>
+            <td>Large, frequently updated knowledge bases</td>
+        </tr>
+    </table>
+
+    <div class="key-point">
+        <h3>When to Use What?</h3>
+        <ul>
+            <li><strong>Fine-Tuning:</strong> Domain-specific language style, specialized reasoning, static knowledge</li>
+            <li><strong>Prompt Engineering:</strong> Small knowledge base, quick prototyping, experimentation</li>
+            <li><strong>RAG:</strong> Large knowledge bases, frequently changing information, customer support chatbots</li>
+        </ul>
+
+        <p><strong>Best Practice:</strong> Often combine multiple techniques!</p>
+        <ul>
+            <li>RAG + Prompt Engineering (very common)</li>
+            <li>RAG + Fine-Tuning (RAFT)</li>
+            <li>All three together for maximum performance</li>
+        </ul>
+    </div>
+
+    <h2>Next Steps: Project 2</h2>
+
+    <div class="overview-box">
+        <h3>Project 2: Build a Customer Support Chatbot</h3>
+
+        <p><strong>What you'll build:</strong> A complete RAG-based customer support chatbot</p>
+
+        <p><strong>What you'll use:</strong></p>
+        <ul>
+            <li>Document parsing libraries (LayoutParser, etc.)</li>
+            <li>Text chunking (Langchain)</li>
+            <li>Embedding models (OpenAI, CLIP, etc.)</li>
+            <li>Vector database (FAISS, Pinecone, etc.)</li>
+            <li>LLM for generation (GPT-4, Claude, LLaMA, etc.)</li>
+            <li>Prompt engineering techniques</li>
+        </ul>
+
+        <p><strong>Skills you'll practice:</strong></p>
+        <ol>
+            <li>Building document processing pipelines</li>
+            <li>Creating and managing vector indexes</li>
+            <li>Implementing retrieval with ANN</li>
+            <li>Designing effective prompts</li>
+            <li>Evaluating RAG system quality</li>
+        </ol>
+    </div>
+
+    <div style="margin-top: 60px; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px; text-align: center;">
+        <h2 style="color: #ffd700; margin-top: 0;">🎉 Congratulations!</h2>
+        <p style="font-size: 1.2em;">You've completed Week 2: Adapting LLMs & Building RAG Systems!</p>
+        <p>You now understand how to build production-ready AI systems that can answer domain-specific questions accurately and efficiently.</p>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LM Playground Notebook Explained (ELI5)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(to bottom, #f0f4f8, #ffffff);
+            color: #333;
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+            font-size: 2.5em;
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: #2980b9;
+            margin-top: 40px;
+            font-size: 2em;
+            border-left: 6px solid #3498db;
+            padding-left: 15px;
+        }
+
+        h3 {
+            color: #16a085;
+            margin-top: 30px;
+            font-size: 1.5em;
+        }
+
+        h4 {
+            color: #27ae60;
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        .eli5-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-left: 6px solid #ffd700;
+        }
+
+        .eli5-box h3, .eli5-box h4 {
+            color: #ffd700;
+            margin-top: 15px;
+        }
+
+        .reference-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .reference-box h4 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            border: 2px solid #4caf50;
+        }
+
+        .code-block code {
+            color: #ffffff;
+        }
+
+        .example-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background: #e3f2fd;
+        }
+
+        .emoji {
+            font-size: 1.3em;
+        }
+
+        .key-point {
+            background: #fff9c4;
+            border-left: 5px solid #fbc02d;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .problem-box {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .solution-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .flow-diagram {
+            background: white;
+            border: 3px solid #3498db;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 12px;
+            text-align: center;
+            font-family: monospace;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .status-complete {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-missing {
+            background: #f44336;
+            color: white;
+        }
+
+        .status-partial {
+            background: #ff9800;
+            color: white;
+        }
+
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        ul, ol {
+            line-height: 2;
+        }
+
+        pre {
+            margin: 0;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .tip-box {
+            background: #e1f5fe;
+            border-left: 5px solid #0288d1;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .tip-box strong {
+            color: #0277bd;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🎓 LM Playground Notebook Explained (Using Week 1 Excalidraw Reference)</h1>
+
+<div class="section-header">
+    <h2 style="margin: 0; border: none; color: white;">📚 Big Picture: What You're Building</h2>
+</div>
+
+<div class="reference-box">
+    <h4>📋 What the Excalidraw Shows:</h4>
+    <p><strong>Week 1: LLM Foundations</strong> with this structure:</p>
+</div>
+
+<div class="flow-diagram">
+<pre>
+Pre-training → Base Model → Post-training → Final Model
+</pre>
+</div>
+
+<div class="key-point">
+    <strong>🎯 The notebook focuses on:</strong> Understanding the <span class="highlight">Base Model</span> (how it works internally) and playing with a <span class="highlight">Final Model</span> (instruction-tuned).
+</div>
+
+<!-- SECTION 1: TOKENIZATION -->
+<h1>🔤 Section 1: Tokenization</h1>
+
+<div class="reference-box">
+    <h4>📋 What the Excalidraw Says:</h4>
+    <blockquote><strong>Step 1.3: Tokenization</strong> - Convert raw text → long sequence of discrete numbers</blockquote>
+    <p>Shows three methods:</p>
+    <ul>
+        <li><strong>Word-level:</strong> "Perfectly fine" → ["Perfectly", "fine"] → [52141, 7060]</li>
+        <li><strong>Character-level:</strong> "Perfectly fine" → ["P", "e", "r", ...] → [6, 9, 21, ...]</li>
+        <li><strong>Subword-level:</strong> "Perfectly fine" → ["Perfect", "ly", "fine"] → [52141, 398, 7060]</li>
+    </ul>
+</div>
+
+<div class="key-point">
+    <strong>What the Notebook Does:</strong> You <span class="highlight">build all three tokenizers yourself</span> with code!
+</div>
+
+<div class="eli5-box">
+    <h3>🧒 ELI5: Tokenization</h3>
+
+    <div class="problem-box">
+        <strong>❌ The Problem:</strong> Robots (computers) can only understand numbers, not words! 📖 ❌ → 🔢 ✅
+    </div>
+
+    <div class="solution-box">
+        <strong>✅ The Solution:</strong> We need a <span class="highlight">SECRET CODEBOOK</span> to translate!
+    </div>
+</div>
+
+<h2>1.1 Word-Level Tokenizer (Building a Simple Codebook)</h2>
+
+<div class="code-block">
+<pre><code>corpus = [
+    "The quick brown fox jumps over the lazy dog",
+    "Tokenization converts text to numbers"
+]</code></pre>
+</div>
+
+<div class="example-box">
+    <h4>What you do:</h4>
+    <ol>
+        <li>Read all sentences</li>
+        <li>Make a list of every unique word</li>
+        <li>Give each word a number</li>
+    </ol>
+
+    <h4>Result:</h4>
+    <div class="code-block">
+<pre>Codebook:
+"The" = 0
+"quick" = 1
+"brown" = 2
+...</pre>
+    </div>
+
+    <p><strong>Encode:</strong> "The brown fox" → [0, 2, 3]</p>
+    <p><strong>Decode:</strong> [0, 2, 3] → "The brown fox"</p>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p>Like giving every word in your favorite book a page number. When you say "Page 5," your friend knows which word you mean! 📖</p>
+
+    <div class="problem-box">
+        <strong>Problem:</strong> What if someone says "unicorn" and it's not in your codebook? → Use <code>[UNK]</code> (unknown) ❌
+    </div>
+</div>
+
+<h2>1.2 Character-Level Tokenizer (Every Letter Gets a Number)</h2>
+
+<div class="code-block">
+<pre><code>vocab = ["a", "b", "c", ..., "z", "A", "B", ..., "Z"]</code></pre>
+</div>
+
+<div class="example-box">
+    <h4>What you do:</h4>
+    <p>"Hello" → ["H", "e", "l", "l", "o"] → [33, 30, 37, 37, 40]</p>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p>Instead of giving whole words numbers, give EVERY LETTER its own number!</p>
+    <ul>
+        <li>A=0, B=1, C=2, ... Z=25</li>
+    </ul>
+
+    <p><strong>✅ Good:</strong> Never have unknown words!</p>
+    <p><strong>❌ Bad:</strong> Very long sequences ("Hello" = 5 numbers instead of 1)</p>
+</div>
+
+<h2>1.3 Subword-Level (BPE) - The Smart Way ⭐</h2>
+
+<div class="reference-box">
+    <h4>The excalidraw shows:</h4>
+    <p><strong>"Perfect" + "ly" + "fine"</strong> - splitting words into pieces!</p>
+</div>
+
+<div class="code-block">
+<pre><code>from transformers import AutoTokenizer
+bpe_tok = AutoTokenizer.from_pretrained("gpt2")</code></pre>
+</div>
+
+<div class="example-box">
+    <p>Load GPT-2's pre-trained tokenizer (has 50,257 word pieces learned from the internet!)</p>
+
+    <h4>Example:</h4>
+    <div class="code-block">
+<pre><code>text = "Unbelievable tokenization powers! 🚀"
+ids = bpe_tok.encode(text)
+# Output: [3118, 6667, 37169, 5736, 1220, 0, 12520, 97, 252]</code></pre>
+    </div>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p>Imagine teaching a robot to read by breaking words into LEGO pieces:</p>
+    <ul>
+        <li>Common pieces get their own number: "un", "believ", "able"</li>
+        <li>The robot can build ANY word by combining pieces! 🧱</li>
+        <li>Even if it never saw "Unbelievable" before, it knows: "Un" + "believ" + "able" = new word!</li>
+    </ul>
+
+    <div class="solution-box">
+        <strong>Why GPT uses this:</strong> Best of both worlds!
+        <ul>
+            <li>✅ Shorter than character-level</li>
+            <li>✅ No unknown words</li>
+            <li>✅ Handles typos and emojis</li>
+        </ul>
+    </div>
+</div>
+
+<h2>1.4 TikToken (Compare GPT-2 vs GPT-4 Tokenizers)</h2>
+
+<div class="code-block">
+<pre><code>import tiktoken
+
+gpt2_enc = tiktoken.get_encoding("gpt2")
+cl100k_enc = tiktoken.get_encoding("cl100k_base")  # GPT-4 uses this</code></pre>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <ul>
+        <li>GPT-2 has an older codebook (1990s dictionary) 📖</li>
+        <li>GPT-4 has a newer codebook (2020s dictionary with emojis, code, multiple languages) 📱</li>
+    </ul>
+
+    <p><strong>Try:</strong> "The 🌟 star-player scored 40 points!"</p>
+    <ul>
+        <li>GPT-2 might break 🌟 into weird pieces</li>
+        <li>GPT-4 knows emojis better! ✨</li>
+    </ul>
+</div>
+
+<!-- SECTION 2: LANGUAGE MODEL -->
+<h1>🤖 Section 2: What is a Language Model?</h1>
+
+<div class="reference-box">
+    <h4>📋 What the Excalidraw Says:</h4>
+    <blockquote><strong>Step 2: Model Architecture</strong></blockquote>
+    <ul>
+        <li>2.1 Neural Networks</li>
+        <li>2.2 Linear layer: neural network building block</li>
+        <li>2.3 Transformer</li>
+        <li>2.4 Decoder-only Transformer (GPT-2)</li>
+    </ul>
+    <p>Shows: <code>x → Neural Network → y</code> (mapping input to output)</p>
+</div>
+
+<div class="eli5-box">
+    <h3>🧒 ELI5: What is a Language Model?</h3>
+
+    <p><strong>Question:</strong> What is an LLM?</p>
+    <p><strong>Answer:</strong> A VERY smart robot that learned to play a guessing game! 🎮</p>
+
+    <h4>The Game:</h4>
+    <ul>
+        <li>I give you: "Albert Einstein was a"</li>
+        <li>You guess: "German-born physicist" ✅</li>
+    </ul>
+
+    <p>The robot read <strong>TRILLIONS</strong> of sentences from the internet and got really good at guessing what comes next!</p>
+</div>
+
+<h2>2.1 Linear Layer - The Building Block</h2>
+
+<div class="reference-box">
+    <h4>The excalidraw shows:</h4>
+    <div class="code-block">
+<pre>x = [0.1, 0.5, -0.02, 0.8]
+     ↓
+Linear Layer (y = xW + b)
+     ↓
+y = [1.22]</pre>
+    </div>
+</div>
+
+<div class="example-box">
+    <h4>What you do in the notebook:</h4>
+    <div class="code-block">
+<pre><code>lin = nn.Linear(3, 2)  # Input: 3 numbers, Output: 2 numbers
+x = torch.tensor([1.0, -1.0, 0.5])
+y = lin(x)  # Magic math happens!</code></pre>
+    </div>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p>A <strong>Linear Layer</strong> is like a math blender! 🍹</p>
+
+    <p>You put in ingredients (numbers):</p>
+    <ul>
+        <li>1 cup of sugar (1.0)</li>
+        <li>-1 cup of lemon (-1.0) (negative = sour!)</li>
+        <li>0.5 cup of water (0.5)</li>
+    </ul>
+
+    <p>The blender has <strong>secret recipe weights</strong>:</p>
+    <ul>
+        <li>Mix sugar × 0.5 + lemon × 2 + water × 0.1 = <strong>Lemonade score!</strong></li>
+    </ul>
+
+    <div class="key-point">
+        The weights (W) are learned during training to make the best predictions!
+    </div>
+</div>
+
+<h2>2.2 Transformer Layer - The Smart Block</h2>
+
+<div class="reference-box">
+    <h4>The excalidraw shows:</h4>
+    <p>Transformer Block has:</p>
+    <ol>
+        <li><strong>Multi-Head Self-Attention</strong> (tokens talk to each other)</li>
+        <li><strong>Feed-Forward Network (MLP)</strong> (processes each token)</li>
+    </ol>
+</div>
+
+<div class="code-block">
+<pre><code>gpt2 = GPT2LMHeadModel.from_pretrained("gpt2")
+first_block = gpt2.transformer.h[0]  # Get first transformer block
+
+print(first_block.attn)  # Attention layer
+print(first_block.mlp)   # Feed-forward layer</code></pre>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p>Imagine a <strong>classroom of students</strong> (tokens):</p>
+
+    <h4>Part 1: Attention (Students Talking) 👥</h4>
+    <ul>
+        <li>Student "Einstein" looks around: "Who should I pay attention to?"</li>
+        <li>Sees "Albert" → "Oh, that's a first name!"</li>
+        <li>Sees "physicist" → "Oh, that describes me!"</li>
+        <li>Each student asks: "Who's important to ME?"</li>
+    </ul>
+
+    <h4>Part 2: Feed-Forward (Individual Thinking) 🧠</h4>
+    <ul>
+        <li>Each student thinks ALONE about what they learned</li>
+        <li>"Einstein" thinks: "I'm probably talking about a famous scientist"</li>
+    </ul>
+
+    <div class="solution-box">
+        <strong>Result:</strong> Each word understands its context better!
+    </div>
+</div>
+
+<h2>2.3 Inside GPT-2 - The Full Architecture</h2>
+
+<div class="reference-box">
+    <h4>The excalidraw shows:</h4>
+    <div class="code-block">
+<pre>LLM == Decoder-only Transformer
+All modern LLMs: GPT-3, Llama-3, Claude, Gemini use this!</pre>
+    </div>
+</div>
+
+<div class="code-block">
+<pre><code>print(f"Total parameters: {sum(p.numel() for p in gpt2.parameters()):,}")
+# Output: 124,439,808 parameters!
+
+print(f"Number of transformer blocks: {len(gpt2.transformer.h)}")
+# Output: 12 blocks</code></pre>
+</div>
+
+<div class="flow-diagram">
+    <h4>The Architecture:</h4>
+<pre>Input tokens
+    ↓
+Token Embedding (convert IDs to vectors)
+    ↓
+Position Embedding (add "where am I?" info)
+    ↓
+Transformer Block 1
+    ↓
+Transformer Block 2
+    ↓
+... (12 blocks total)
+    ↓
+Transformer Block 12
+    ↓
+Output: Probabilities for next token</pre>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p>GPT-2 is like a <strong>12-story building</strong>! 🏢</p>
+
+    <h4>Ground Floor (Embedding):</h4>
+    <ul>
+        <li>You enter with a ticket number (token ID: 15496)</li>
+        <li>Get a special badge with your info (768 numbers describing "Hello")</li>
+    </ul>
+
+    <h4>Floors 1-12 (Transformer Blocks):</h4>
+    <p>Each floor has 2 rooms:</p>
+    <ul>
+        <li><strong>Room A (Attention):</strong> Talk to other people on this floor</li>
+        <li><strong>Room B (Feed-Forward):</strong> Think alone about what you learned</li>
+    </ul>
+    <p>You go up each floor getting smarter about context!</p>
+
+    <h4>Rooftop (Output):</h4>
+    <ul>
+        <li>You've learned so much! Now predict: "What word comes next?"</li>
+        <li>Output: 50,257 guesses (one for each word in vocabulary)</li>
+    </ul>
+
+    <div class="key-point">
+        <strong>Why 124 million parameters?</strong> Each floor needs millions of tiny weights/numbers to make good decisions!
+    </div>
+</div>
+
+<h2>2.4 LLM's Output - Getting Predictions</h2>
+
+<div class="reference-box">
+    <h4>The excalidraw shows:</h4>
+    <div class="code-block">
+<pre>LLM → probabilities → next token
+"was": 0.89
+"is": 0.03
+"has": 0.01</pre>
+    </div>
+</div>
+
+<div class="code-block">
+<pre><code>text = "Hello my name"
+input_ids = tokenizer.encode(text, return_tensors="pt")
+
+outputs = model(input_ids)
+logits = outputs.logits  # Raw scores
+
+# Get predictions for what comes after "name"
+last_token_logits = logits[0, -1, :]
+probs = F.softmax(last_token_logits, dim=-1)
+
+# Top-5 predictions:
+# 1. ' is' (prob: 0.2541)
+# 2. ',' (prob: 0.0821)
+# 3. ' was' (prob: 0.0456)</code></pre>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p>The robot reads: "Hello my name"</p>
+
+    <p>Then it thinks REALLY hard and says:</p>
+    <ul>
+        <li>"<strong>is</strong>" - I'm 25% sure!</li>
+        <li>"<strong>,</strong>" (comma) - I'm 8% sure!</li>
+        <li>"<strong>was</strong>" - I'm 4% sure!</li>
+        <li>50,254 other words - all have tiny chances</li>
+    </ul>
+
+    <div class="key-point">
+        <strong>How does it decide?</strong> That's Section 3! 👇
+    </div>
+</div>
+
+<!-- SECTION 3: TEXT GENERATION -->
+<h1>🎲 Section 3: Text Generation (Decoding Strategies)</h1>
+
+<div class="reference-box">
+    <h4>📋 What the Excalidraw Says:</h4>
+    <blockquote><strong>Step 4: Text Generation</strong></blockquote>
+    <ul>
+        <li>Iterative generation</li>
+        <li>Decoding/Sampling Algorithms: Greedy, Top-k, Top-p, Beam search, Temperature</li>
+    </ul>
+    <p>Shows: "How to choose a token from this probability distribution?"</p>
+</div>
+
+<div class="eli5-box">
+    <h3>🧒 ELI5: The Ice Cream Problem 🍦</h3>
+
+    <p>The robot has 50,257 ice cream flavors to choose from!</p>
+    <p>Each flavor has a "yumminess score" (probability):</p>
+
+    <ul>
+        <li>Vanilla: 40% yummy</li>
+        <li>Chocolate: 30% yummy</li>
+        <li>Strawberry: 15% yummy</li>
+        <li>50,254 other flavors: 15% total</li>
+    </ul>
+
+    <p><strong>Question:</strong> Which flavor should the robot pick?</p>
+</div>
+
+<h2>3.1 Greedy Decoding - Always Pick #1</h2>
+
+<div class="reference-box">
+    <h4>The excalidraw shows:</h4>
+    <p><strong>"Greedy: Pick the most likely token"</strong></p>
+</div>
+
+<div class="code-block">
+<pre><code>generate("gpt2", "Once upon a time", strategy="greedy", max_new_tokens=80)</code></pre>
+</div>
+
+<div class="example-box">
+    <h4>Output:</h4>
+    <p>"Once upon a time, I was a little bit of a nerd. I was a little bit of a nerd..."</p>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p><strong>Greedy = Always pick the BEST ice cream!</strong></p>
+
+    <p>Every time: Pick Vanilla (40% best)</p>
+    <p>Result: Vanilla, Vanilla, Vanilla... 🥱 BORING!</p>
+
+    <div class="problem-box">
+        <strong>Problem with Greedy:</strong>
+        <ul>
+            <li>❌ Repetitive ("a little bit of a little bit of...")</li>
+            <li>❌ Safe but uninteresting</li>
+            <li>❌ Gets stuck in loops!</li>
+        </ul>
+    </div>
+
+    <div class="solution-box">
+        <strong>When to use Greedy?</strong>
+        <ul>
+            <li>✅ Math problems: "What is 2+2?" → Need ONE correct answer: "4"</li>
+            <li>✅ Code generation: Need correct syntax</li>
+        </ul>
+    </div>
+</div>
+
+<h2>3.2 Top-k Sampling - Pick from Top 50</h2>
+
+<div class="reference-box">
+    <h4>The excalidraw shows:</h4>
+    <p><strong>"Top-k: Pick according to probabilities of top k tokens"</strong></p>
+</div>
+
+<div class="code-block">
+<pre><code>generate("gpt2", "Once upon a time", strategy="top_k", max_new_tokens=80)</code></pre>
+</div>
+
+<div class="example-box">
+    <h4>Output (changes each run!):</h4>
+    <p>"Once upon a time, there was a brave knight who lived in a castle..."</p>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p><strong>Top-k = Pick from the top 50 BEST ice creams randomly!</strong></p>
+
+    <p>Steps:</p>
+    <ol>
+        <li>Look at top 50 flavors (ignore 50,207 bad ones)</li>
+        <li>Randomly pick from these 50, but better flavors have higher chance</li>
+        <li>Result: Vanilla (40%), Chocolate (30%), or maybe Strawberry (15%)!</li>
+    </ol>
+
+    <div class="solution-box">
+        <strong>Result:</strong> More variety! ✅
+    </div>
+</div>
+
+<h2>3.3 Top-p (Nucleus) Sampling - Pick Until 90%</h2>
+
+<div class="reference-box">
+    <h4>The excalidraw shows:</h4>
+    <p><strong>"Top-p: Pick from top k tokens exceeding cumulative probability p"</strong></p>
+</div>
+
+<div class="code-block">
+<pre><code>generate("gpt2", "Once upon a time", strategy="top_p", max_new_tokens=80)</code></pre>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p><strong>Top-p = Keep adding flavors until you hit 90% yumminess!</strong></p>
+
+    <p>Example (p=0.9):</p>
+    <ul>
+        <li>Vanilla: 40% (total so far: 40%)</li>
+        <li>Chocolate: 30% (total so far: 70%)</li>
+        <li>Strawberry: 15% (total so far: 85%)</li>
+        <li>Mint: 8% (total so far: 93%) ✅ STOP! Over 90%!</li>
+    </ul>
+
+    <p>Pick randomly from: {Vanilla, Chocolate, Strawberry, Mint}</p>
+
+    <div class="solution-box">
+        <strong>Why better than Top-k?</strong>
+        <ul>
+            <li>✅ When confident → pick from fewer words (quality)</li>
+            <li>✅ When uncertain → pick from more words (creativity)</li>
+            <li>✅ Adapts automatically!</li>
+        </ul>
+    </div>
+</div>
+
+<h2>3.4 Temperature - The Creativity Knob 🌡️</h2>
+
+<div class="reference-box">
+    <h4>The excalidraw shows:</h4>
+    <blockquote>"Temperature: parameter to control randomness. T scales the logits before softmax."</blockquote>
+
+    <p>Shows this table:</p>
+    <ul>
+        <li>Code generation: T = 0.2-0.4 (precise)</li>
+        <li>Math problems: T = 0.1-0.3 (one answer)</li>
+        <li>Creative writing: T = 0.7-1.2 (variety)</li>
+    </ul>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p><strong>Temperature = How adventurous is the robot?</strong></p>
+
+    <h4>Low Temperature (0.2) = Robot is VERY CAREFUL 🤓</h4>
+    <div class="example-box">
+<pre>Original: Vanilla 40%, Chocolate 30%, Strawberry 15%
+After T=0.2: Vanilla 80%, Chocolate 15%, Strawberry 5%</pre>
+        <p>→ Almost always picks Vanilla (safe, boring, correct)</p>
+    </div>
+
+    <h4>High Temperature (1.5) = Robot is WILD! 🎉</h4>
+    <div class="example-box">
+<pre>Original: Vanilla 40%, Chocolate 30%, Strawberry 15%
+After T=1.5: Vanilla 35%, Chocolate 32%, Strawberry 20%</pre>
+        <p>→ More likely to try Chocolate or Strawberry (creative, risky)</p>
+    </div>
+
+    <div class="solution-box">
+        <strong>When to use each?</strong>
+        <ul>
+            <li><strong>T=0.2:</strong> Math, code → "What is 2+2?" → "4" ✅</li>
+            <li><strong>T=1.0:</strong> Stories → "Once upon a time..." → Surprising plot twists! 🎭</li>
+        </ul>
+    </div>
+</div>
+
+<h2>3.5 Beam Search (Bonus)</h2>
+
+<div class="reference-box">
+    <h4>The excalidraw shows:</h4>
+    <p><strong>"Beam search: Keep track of top 3 paths"</strong></p>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p>Instead of choosing one word at a time, explore <strong>3 possible stories at once</strong>!</p>
+
+    <div class="flow-diagram">
+<pre>Start: "Once upon"
+   ↓
+Path 1: "Once upon a time..." (score: 0.8)
+Path 2: "Once upon a hill..." (score: 0.6)
+Path 3: "Once upon a sunny..." (score: 0.5)
+   ↓
+Keep best 3, continue...</pre>
+    </div>
+
+    <p>Like playing <strong>3 parallel games of chess</strong> and picking the best outcome!</p>
+</div>
+
+<!-- SECTION 4: COMPLETION VS INSTRUCTION -->
+<h1>💬 Section 4: Completion vs Instruction-Tuned LLMs</h1>
+
+<div class="reference-box">
+    <h4>📋 What the Excalidraw Says:</h4>
+    <blockquote><strong>Post-training</strong></blockquote>
+    <ol>
+        <li><strong>SFT (Supervised Fine-Tuning):</strong> Goal = Completion → following instructions</li>
+        <li><strong>RL (Reinforcement Learning):</strong> Goal = generate human-preferred responses</li>
+    </ol>
+
+    <p>Shows transformation:</p>
+    <div class="code-block">
+<pre>Base model: "I want to learn ML"
+→ "Where should I begin? Is it easy?..." (continues text)
+    ↓ SFT
+SFT model: "I want to learn ML"
+→ "Take Andrew NG's course on Coursera." (answers!)</pre>
+    </div>
+</div>
+
+<div class="eli5-box">
+    <h3>🧒 ELI5: Two Types of Robots</h3>
+</div>
+
+<h2>Robot 1: GPT-2 (Completion Model) 📝</h2>
+
+<div class="example-box">
+    <p><strong>Training:</strong> Read billions of web pages, learn to continue text</p>
+
+    <p><strong>You say:</strong> "What is 2+2?"</p>
+
+    <p><strong>GPT-2 thinks:</strong> "I've seen this pattern! People write questions in lists!"</p>
+
+    <p><strong>GPT-2 says:</strong></p>
+    <div class="code-block">
+<pre>"What is 2+2?
+What is 2+3?
+What is 2+4?
+What is 3+3?..."</pre>
+    </div>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p>Like a parrot who repeats patterns it heard! 🦜</p>
+    <ul>
+        <li>Sees "What is" → continues with more questions</li>
+        <li>Just mimics text style, doesn't ANSWER</li>
+    </ul>
+</div>
+
+<h2>Robot 2: Qwen-Chat (Instruction-Tuned Model) 🤖💬</h2>
+
+<div class="example-box">
+    <p><strong>Extra Training:</strong> Learned from 10,000-100,000 examples of:</p>
+    <div class="code-block">
+<pre>&lt;prompt&gt; Give three tips for staying healthy.
+&lt;response&gt;
+1. Eat a balanced diet...
+2. Exercise regularly...
+3. Get enough sleep...</pre>
+    </div>
+
+    <p><strong>You say:</strong> "What is 2+2?"</p>
+
+    <p><strong>Qwen thinks:</strong> "This is a QUESTION asking for an ANSWER!"</p>
+
+    <p><strong>Qwen says:</strong></p>
+    <div class="code-block">
+<pre>"2+2 equals 4."</pre>
+    </div>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p>Like a helpful teacher! 👨‍🏫</p>
+    <ul>
+        <li>Understands you're asking for help</li>
+        <li>Gives direct answer</li>
+        <li>Stays on topic</li>
+    </ul>
+</div>
+
+<h2>What You Do in the Notebook:</h2>
+
+<div class="code-block">
+<pre><code># Load both models
+models = {
+    "gpt2": "gpt2",  # Completion model
+    "qwen": "Qwen/Qwen1.5-1.8B-Chat"  # Instruction-tuned
+}
+
+# Test same prompt on both
+prompt = "What is 2+2?"
+
+# GPT-2 output: "What is 2+3? What is 2+4?..." (continues pattern)
+# Qwen output: "The answer is 4." (actually answers!)</code></pre>
+</div>
+
+<h2>The Difference:</h2>
+
+<table class="comparison-table">
+    <thead>
+        <tr>
+            <th>Model</th>
+            <th>Type</th>
+            <th>Training</th>
+            <th>Behavior</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>GPT-2</strong></td>
+            <td>Base/Completion</td>
+            <td>Read internet</td>
+            <td>Continues your text</td>
+        </tr>
+        <tr>
+            <td><strong>Qwen</strong></td>
+            <td>Instruction-tuned</td>
+            <td>Base + SFT + RL</td>
+            <td>Answers questions</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- SECTION 5: PLAYGROUND -->
+<h1>🎮 Section 5: Interactive Playground</h1>
+
+<div class="reference-box">
+    <h4>📋 What the Excalidraw Says:</h4>
+    <blockquote><strong>Project 1: LLM playground</strong></blockquote>
+    <p>This is your chance to BUILD A TOY VERSION of ChatGPT! 🎉</p>
+</div>
+
+<div class="eli5-box">
+    <h3>🧒 ELI5: Build Your Own ChatGPT</h3>
+
+    <h4>What you create:</h4>
+    <div class="example-box">
+<pre>[Dropdown] Choose model: GPT-2 or Qwen
+[Text box] Enter prompt: "Tell me a joke"
+[Dropdown] Strategy: greedy, top-k, top-p, beam
+[Slider] Temperature: 0.1 to 2.0
+[Button] Generate!
+
+[Output box]
+"Why did the chicken cross the road?..."</pre>
+    </div>
+</div>
+
+<div class="code-block">
+<pre><code>import ipywidgets as widgets
+
+# Create UI elements
+model_dropdown = widgets.Dropdown(options=['gpt2', 'qwen'])
+prompt_textbox = widgets.Textarea(value='Tell me a joke')
+strategy_dropdown = widgets.Dropdown(options=['greedy', 'top_k', 'top_p'])
+temperature_slider = widgets.FloatSlider(min=0.1, max=2.0, value=1.0)
+generate_button = widgets.Button(description='Generate!')
+
+# When button clicked → call generate() function</code></pre>
+</div>
+
+<div class="eli5-box">
+    <h4>🧒 ELI5:</h4>
+    <p>You're building a <strong>control panel</strong> for the robot! 🎛️</p>
+
+    <p>Buttons and knobs let you:</p>
+    <ul>
+        <li>Choose which robot (GPT-2 or Qwen)</li>
+        <li>Tell it what to do (prompt)</li>
+        <li>Control creativity (temperature)</li>
+        <li>Pick strategy (greedy or top-p)</li>
+    </ul>
+
+    <p>Press "Generate" → Robot writes text! ✨</p>
+</div>
+
+<!-- SUMMARY -->
+<h1>🎯 Summary: Notebook vs Excalidraw</h1>
+
+<div class="section-header">
+    <h2 style="margin: 0; border: none; color: white;">What the Notebook Teaches (Hands-On)</h2>
+</div>
+
+<div class="flow-diagram">
+<pre>┌─────────────────────────────────────────────┐
+│  Week 1 Excalidraw: FULL LLM PIPELINE       │
+│                                             │
+│  Pre-training → Base Model → Post-training  │
+│                                             │
+│  ┌───────────────────────────────────────┐ │
+│  │ Notebook focuses on THIS PART:        │ │
+│  │                                       │ │
+│  │ 1. Tokenization (how text → numbers) │ │
+│  │ 2. Base Model internals (GPT-2)      │ │
+│  │ 3. Text generation (sampling)        │ │
+│  │ 4. Compare Base vs Instruction model │ │
+│  └───────────────────────────────────────┘ │
+└─────────────────────────────────────────────┘</pre>
+</div>
+
+<h2>The Learning Journey 🚀</h2>
+
+<table class="comparison-table">
+    <thead>
+        <tr>
+            <th>Step</th>
+            <th>Excalidraw Shows</th>
+            <th>Notebook Does</th>
+            <th>You Learn</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>1. Tokenization</strong></td>
+            <td>Word/Char/Subword tokenization</td>
+            <td>Build all 3 from scratch + use GPT-2/GPT-4 tokenizers</td>
+            <td>How robots turn words into numbers</td>
+            <td><span class="status-badge status-complete">✅ Complete</span></td>
+        </tr>
+        <tr>
+            <td><strong>2. Model Architecture</strong></td>
+            <td>Linear → Neural Network → Transformer → GPT-2</td>
+            <td>Load real GPT-2, inspect 124M parameters, see 12 transformer blocks</td>
+            <td>LLMs are just stacked math functions!</td>
+            <td><span class="status-badge status-complete">✅ Complete</span></td>
+        </tr>
+        <tr>
+            <td><strong>3. Text Generation</strong></td>
+            <td>Greedy, Top-k, Top-p, Beam, Temperature</td>
+            <td>Generate text with all strategies, compare outputs</td>
+            <td>How to control creativity vs correctness</td>
+            <td><span class="status-badge status-complete">✅ Complete</span></td>
+        </tr>
+        <tr>
+            <td><strong>4. Instruction Models</strong></td>
+            <td>Full SFT + RL training process</td>
+            <td>Compare GPT-2 (base) vs Qwen (instruction-tuned)</td>
+            <td>Why ChatGPT answers questions (but NOT how to train it)</td>
+            <td><span class="status-badge status-partial">⚠️ Conceptual</span></td>
+        </tr>
+        <tr>
+            <td><strong>5. Playground</strong></td>
+            <td>Project 1</td>
+            <td>Build interactive UI to experiment</td>
+            <td>How to combine everything into a mini-ChatGPT!</td>
+            <td><span class="status-badge status-complete">✅ Complete</span></td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Missing from Notebook</h2>
+
+<div class="problem-box">
+    <p>The excalidraw covers but notebook doesn't:</p>
+    <ol>
+        <li><span class="status-badge status-missing">❌</span> <strong>Pre-training data</strong> (crawling, cleaning, CommonCrawl)</li>
+        <li><span class="status-badge status-missing">❌</span> <strong>How to do SFT training</strong> (just shows comparison)</li>
+        <li><span class="status-badge status-missing">❌</span> <strong>How to do RL/RLHF</strong> (PPO, GRPO, DPO algorithms)</li>
+        <li><span class="status-badge status-missing">❌</span> <strong>Evaluation</strong> (benchmarks, leaderboards)</li>
+        <li><span class="status-badge status-missing">❌</span> <strong>System design</strong> (cost, GPUs, time)</li>
+    </ol>
+</div>
+
+<div class="tip-box">
+    <strong>💡 Why?</strong> These require massive compute (thousands of GPUs, months of training) - not practical for a notebook!
+</div>
+
+<h2>🎉 What You Achieved</h2>
+
+<div class="solution-box">
+    <p>After this notebook, you understand:</p>
+
+    <ul>
+        <li>✅ How text becomes numbers (tokenization)</li>
+        <li>✅ What's inside GPT-2 (transformer blocks)</li>
+        <li>✅ How models predict next words (probabilities)</li>
+        <li>✅ How to generate text (sampling strategies)</li>
+        <li>✅ Why ChatGPT is different from GPT-2 (instruction tuning)</li>
+    </ul>
+</div>
+
+<div class="key-point" style="text-align: center; font-size: 1.2em; margin: 30px 0;">
+    <p><strong>You went from:</strong> "LLMs are magic" 🪄</p>
+    <p><strong>To:</strong> "LLMs are giant probability calculators trained on text" 🧮</p>
+</div>
+
+
+</body>
+</html>

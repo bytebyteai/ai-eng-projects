@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How LLMs Are Built - Complete Pipeline</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(to bottom, #f0f4f8, #ffffff);
+            color: #333;
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+            font-size: 2.5em;
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: #2980b9;
+            margin-top: 40px;
+            font-size: 2em;
+            border-left: 6px solid #3498db;
+            padding-left: 15px;
+        }
+
+        h3 {
+            color: #16a085;
+            margin-top: 30px;
+            font-size: 1.5em;
+        }
+
+        h4 {
+            color: #27ae60;
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        .eli5-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-left: 6px solid #ffd700;
+        }
+
+        .eli5-box h3, .eli5-box h4 {
+            color: #ffd700;
+            margin-top: 15px;
+        }
+
+        .eli5-box strong {
+            color: #fff;
+        }
+
+        .overview-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            border: 2px solid #4caf50;
+        }
+
+        .code-block code {
+            color: #ffffff;
+        }
+
+        .example-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background: #e3f2fd;
+        }
+
+        .key-point {
+            background: #fff9c4;
+            border-left: 5px solid #fbc02d;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .problem-box {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .solution-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .flow-diagram {
+            background: white;
+            border: 3px solid #3498db;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 12px;
+            text-align: center;
+            font-family: monospace;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .section-header h1, .section-header h2 {
+            margin: 0;
+            border: none;
+            color: white;
+        }
+
+        .tip-box {
+            background: #e1f5fe;
+            border-left: 5px solid #0288d1;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .checkmark {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .crossmark {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        ul, ol {
+            line-height: 2;
+        }
+
+        pre {
+            background: transparent;
+            border-left: none;
+            padding: 0;
+            border-radius: 0;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #333;
+        }
+
+        .phase-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px;
+            font-size: 0.9em;
+        }
+
+        .phase-pre {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .phase-post {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .cost-badge {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .time-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #e0e0e0;
+            margin: 40px 0;
+        }
+
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="section-header">
+    <h1>How LLMs Are Built - Complete Pipeline</h1>
+    <p style="margin: 10px 0;">From Raw Internet Data to ChatGPT</p>
+</div>
+
+<h2>What is an LLM?</h2>
+
+<div class="overview-box">
+    <p><strong>Large Language Model (LLM)</strong> = An AI model that can understand and generate text</p>
+
+    <h3>How it works:</h3>
+    <p>An LLM is a neural network trained to predict the next token (word/subword) in a sequence.</p>
+</div>
+
+<div class="example-box">
+    <h4>Example:</h4>
+    <pre>Input:  "Albert Einstein was a"
+LLM predicts probabilities for next word:
+  • "German-born" (35%)
+  • "physicist" (25%)
+  • "scientist" (20%)
+  • "mathematician" (10%)
+  • ... (other words)</pre>
+</div>
+
+<h3>Modern LLMs:</h3>
+<ul>
+    <li><strong>ChatGPT</strong> from OpenAI (chatgpt.com)</li>
+    <li><strong>Claude</strong> from Anthropic (claude.ai)</li>
+    <li><strong>Gemini</strong> from Google (gemini.google.com)</li>
+    <li><strong>Grok</strong> from xAI (grok.com)</li>
+    <li><strong>Meta AI</strong> from Meta (meta.ai)</li>
+</ul>
+
+<h3>How are these LLMs built?</h3>
+
+<div class="key-point">
+    <p>Building an LLM requires:</p>
+    <ul>
+        <li><strong>$$$$</strong> - Millions of dollars</li>
+        <li><strong>Thousands of GPUs</strong> - Massive compute power</li>
+        <li><strong>Months of training</strong> - For pre-training</li>
+        <li><strong>Days of training</strong> - For post-training</li>
+    </ul>
+</div>
+
+<div class="eli5-box">
+    <h3>🧒 Explain Like I'm 5: What is an LLM?</h3>
+
+    <p>Imagine you have a <strong>super smart robot friend</strong> who has read EVERY book, website, and article in the whole world! 📚</p>
+
+    <h4>Here's how it works:</h4>
+
+    <p>You say: "Once upon a time, there was a..."</p>
+
+    <p>The robot thinks:</p>
+    <ul>
+        <li>"Hmm, I've seen this phrase thousands of times!"</li>
+        <li>"After 'there was a', people usually say: princess (40%), dragon (30%), king (20%), or castle (10%)"</li>
+    </ul>
+
+    <p>Then the robot picks one: <strong>"princess"</strong></p>
+
+    <p>You continue: "Once upon a time, there was a princess who..."</p>
+
+    <p>The robot thinks again and picks: <strong>"lived"</strong></p>
+
+    <p>Keep going, and the robot writes a whole story! That's basically what ChatGPT does - it's really good at guessing what word comes next! 🎯</p>
+
+    <h4>Why is it useful?</h4>
+    <ul>
+        <li>It can answer questions (because it read SO much)</li>
+        <li>It can write stories, code, emails, or poems</li>
+        <li>It can explain difficult things in simple ways (like I'm doing now!)</li>
+    </ul>
+</div>
+
+<h2>Overview: Two-Phase Process</h2>
+
+<div class="flow-diagram">
+<pre>Phase 1: PRE-TRAINING (Months, $$$)
+         ↓
+    Base Model (completes text)
+         ↓
+Phase 2: POST-TRAINING (Weeks, $$)
+         ↓
+    Instruction-tuned Model (follows instructions)</pre>
+</div>
+
+<hr>
+
+<div class="section-header">
+    <h1>PHASE 1: PRE-TRAINING</h1>
+    <p style="margin: 10px 0;"><span class="phase-badge phase-pre">Pre-Training</span> <span class="phase-badge cost-badge">$5M</span> <span class="phase-badge time-badge">3 Months</span></p>
+</div>
+
+<div class="key-point">
+    <strong>Goal</strong>: Teach the model to predict the next word
+</div>
+
+<div class="eli5-box">
+    <h3>🧒 ELI5: Pre-Training</h3>
+
+    <p>Imagine you're teaching a baby to talk! 👶</p>
+
+    <h4>Step 1: Show them LOTS of examples</h4>
+    <ul>
+        <li>You read thousands of books to the baby</li>
+        <li>The baby listens to millions of conversations</li>
+        <li>The baby watches tons of TV shows</li>
+    </ul>
+
+    <h4>Step 2: The baby learns patterns</h4>
+    <ul>
+        <li>After hearing "The cat sat on the..." many times</li>
+        <li>The baby learns the next word is probably "mat" or "chair"</li>
+        <li>The baby gets better and better at guessing!</li>
+    </ul>
+
+    <p><strong>That's Pre-Training!</strong> We show the AI trillions of words, and it learns to predict what comes next. Just like how you learned English by hearing it A LOT! 🎓</p>
+</div>
+
+<h2>1.1 Data Preparation</h2>
+
+<h3>What data do we need?</h3>
+
+<div class="key-point">
+    <strong>Massive amounts of text</strong> - typically 300B to 1T+ tokens (words/subwords)
+</div>
+
+<h3>Data Sources</h3>
+
+<div class="example-box">
+    <h4>1. Web Crawl (CommonCrawl)</h4>
+    <ul>
+        <li>Scraped from the entire internet</li>
+        <li>Books, articles, forums, Reddit, Wikipedia</li>
+        <li><strong>Problem</strong>: Contains spam, errors, toxic content</li>
+    </ul>
+
+    <h4>2. Books</h4>
+    <ul>
+        <li>Project Gutenberg (public domain)</li>
+        <li>Published books datasets</li>
+        <li>High-quality, grammatical text</li>
+    </ul>
+
+    <h4>3. Code Repositories</h4>
+    <ul>
+        <li>GitHub public repos</li>
+        <li>Stack Overflow</li>
+        <li>Improves reasoning and structured thinking</li>
+    </ul>
+
+    <h4>4. Academic Papers</h4>
+    <ul>
+        <li>ArXiv, PubMed</li>
+        <li>Improves technical knowledge</li>
+    </ul>
+
+    <h4>5. Curated Datasets</h4>
+    <ul>
+        <li>Wikipedia</li>
+        <li>News articles</li>
+        <li>High-quality human-written text</li>
+    </ul>
+</div>
+
+<h3>Data Cleaning Pipeline</h3>
+
+<div class="flow-diagram">
+<pre>Raw Text (10TB)
+    ↓
+1. Deduplication
+   • Remove exact duplicates
+   • Remove near-duplicates (fuzzy matching)
+    ↓
+2. Quality Filtering
+   • Remove spam, ads, navigation menus
+   • Filter by language (keep English, etc.)
+   • Remove low-quality text (too short, gibberish)
+    ↓
+3. Toxicity Filtering
+   • Remove hate speech, explicit content
+   • Use classifiers to detect harmful content
+    ↓
+4. PII Removal
+   • Remove personal information (emails, phones, SSNs)
+   • Privacy protection
+    ↓
+5. Tokenization
+   • Convert text to tokens using BPE/tokenizer
+   • Create training batches
+    ↓
+Clean Training Data (1TB)</pre>
+</div>
+
+<h3>Example Data Pipeline</h3>
+
+<div class="problem-box">
+    <strong>Raw text</strong>:
+    <pre>"Click here!!!   Buy now!!! asdfkjasdkfj"</pre>
+    <strong>After quality filtering</strong>:
+    <pre>""  # Removed as spam</pre>
+</div>
+
+<div class="solution-box">
+    <strong>Good example</strong>:
+    <pre>Raw: "The transformer architecture revolutionized NLP."
+Clean: "The transformer architecture revolutionized NLP."
+Tokens: [464, 47385, 10959, 5854, ized, 12887, 47, 13]</pre>
+</div>
+
+<h3>Data Mix (Typical LLM)</h3>
+
+<table class="comparison-table">
+    <tr>
+        <th>Source</th>
+        <th>Percentage</th>
+    </tr>
+    <tr>
+        <td>CommonCrawl</td>
+        <td>60%</td>
+    </tr>
+    <tr>
+        <td>Books</td>
+        <td>16%</td>
+    </tr>
+    <tr>
+        <td>Wikipedia</td>
+        <td>10%</td>
+    </tr>
+    <tr>
+        <td>Code</td>
+        <td>8%</td>
+    </tr>
+    <tr>
+        <td>Papers</td>
+        <td>4%</td>
+    </tr>
+    <tr>
+        <td>Other</td>
+        <td>2%</td>
+    </tr>
+</table>
+
+<h2>1.2 Model Architecture</h2>
+
+<h3>Why Neural Networks?</h3>
+
+<div class="problem-box">
+    <h4>Traditional Models (Before 2010s):</h4>
+    <pre>Word → Look up in dictionary → Fixed representation
+
+Problems:
+<span class="crossmark">❌</span> Can't handle new words
+<span class="crossmark">❌</span> No context understanding
+<span class="crossmark">❌</span> "bank" (river) vs "bank" (money) look identical</pre>
+</div>
+
+<div class="solution-box">
+    <h4>Neural Networks:</h4>
+    <pre>Word → Learned representation → Context-aware embedding
+
+Benefits:
+<span class="checkmark">✅</span> Learns from data
+<span class="checkmark">✅</span> Captures semantic meaning
+<span class="checkmark">✅</span> "bank" representation changes based on context</pre>
+</div>
+
+<h3>Why Transformers?</h3>
+
+<p>Let's compare to previous architectures:</p>
+
+<h4>RNN/LSTM (Before 2017)</h4>
+
+<div class="problem-box">
+    <pre>Input:  "The cat sat on the mat"
+Process: The → cat → sat → on → the → mat
+         (sequential, one at a time)
+
+Problems:
+<span class="crossmark">❌</span> Slow (can't parallelize)
+<span class="crossmark">❌</span> Forgets early words in long sequences
+<span class="crossmark">❌</span> "The" information degraded by time we reach "mat"</pre>
+</div>
+
+<h4>Transformer (2017+)</h4>
+
+<div class="solution-box">
+    <pre>Input:  "The cat sat on the mat"
+Process: ALL tokens simultaneously!
+         [The, cat, sat, on, the, mat]
+         (parallel processing)
+
+Benefits:
+<span class="checkmark">✅</span> Fast (all tokens processed at once on GPU)
+<span class="checkmark">✅</span> Direct connections between any two words
+<span class="checkmark">✅</span> "The" can directly attend to "mat"
+<span class="checkmark">✅</span> Scales to very long contexts</pre>
+</div>
+
+<h3>Why Transformers are PERFECT for Text Generation</h3>
+
+<div class="solution-box">
+    <h4>1. Parallelization</h4>
+    <pre>RNN:  Process 1000 tokens → takes 1000 steps
+Transformer: Process 1000 tokens → takes 1 step!</pre>
+
+    <h4>2. Self-Attention Mechanism</h4>
+    <pre>"The trophy didn't fit in the suitcase because it was too big"
+
+Question: What is "it"?
+
+Attention mechanism:
+• Computes similarity between "it" and all previous words
+• "trophy" (high similarity) vs "suitcase" (low similarity)
+• Model learns "it" = "trophy"</pre>
+
+    <h4>3. Long-Range Dependencies</h4>
+    <pre>Sentence 1: "Alice loves chocolate."
+...
+(50 sentences later)
+Sentence 51: "She ate some."
+
+Transformer: Direct path from "She" → "Alice"
+RNN: Information about "Alice" has faded away</pre>
+
+    <h4>4. Positional Encoding</h4>
+    <pre>Without position info:
+"Dog bites man" = "Man bites dog"  <span class="crossmark">❌</span> Same!
+
+With positional encoding:
+"Dog"[position=0] ≠ "Dog"[position=2]  <span class="checkmark">✅</span> Different!</pre>
+</div>
+
+<h3>Transformer Architecture Deep Dive</h3>
+
+<div class="flow-diagram">
+<pre>┌─────────────────────────────────────┐
+│         INPUT TEXT                   │
+│    "The cat sat on the mat"         │
+└─────────────────────────────────────┘
+                ↓
+┌─────────────────────────────────────┐
+│         TOKENIZATION                 │
+│    [464, 3797, 3332, 319, 262, 2603]│
+└─────────────────────────────────────┘
+                ↓
+┌─────────────────────────────────────┐
+│      TOKEN EMBEDDING                 │
+│  Each token → 768-dim vector        │
+└─────────────────────────────────────┘
+                ↓
+┌─────────────────────────────────────┐
+│    POSITIONAL ENCODING               │
+│  Add position info to each token    │
+└─────────────────────────────────────┘
+                ↓
+        ┌───────────────┐
+        │ TRANSFORMER   │
+        │   BLOCK 1     │
+        │               │
+        │ ┌───────────┐ │
+        │ │Layer Norm │ │
+        │ └───────────┘ │
+        │       ↓       │
+        │ ┌───────────┐ │
+        │ │Multi-Head │ │
+        │ │Attention  │ │ ← Tokens look at each other
+        │ └───────────┘ │
+        │       ↓       │
+        │ ┌───────────┐ │
+        │ │ Residual  │ │ ← Skip connection
+        │ └───────────┘ │
+        │       ↓       │
+        │ ┌───────────┐ │
+        │ │Layer Norm │ │
+        │ └───────────┘ │
+        │       ↓       │
+        │ ┌───────────┐ │
+        │ │    MLP    │ │ ← Transform each token
+        │ │(Feed-Fwd) │ │
+        │ └───────────┘ │
+        │       ↓       │
+        │ ┌───────────┐ │
+        │ │ Residual  │ │
+        │ └───────────┘ │
+        └───────────────┘
+                ↓
+        (Repeat 12-96 times)
+                ↓
+┌─────────────────────────────────────┐
+│      FINAL LAYER NORM                │
+└─────────────────────────────────────┘
+                ↓
+┌─────────────────────────────────────┐
+│      OUTPUT PROJECTION               │
+│   768-dim → 50,257-dim (vocab size) │
+└─────────────────────────────────────┘
+                ↓
+┌─────────────────────────────────────┐
+│         SOFTMAX                      │
+│   Convert to probabilities          │
+└─────────────────────────────────────┘
+                ↓
+       Next Token Prediction</pre>
+</div>
+
+<h3>Decoder-Only Transformer (GPT Architecture)</h3>
+
+<div class="key-point">
+    <p><strong>All modern LLMs</strong> use the decoder-only Transformer architecture!</p>
+</div>
+
+<h4>Examples:</h4>
+<ul>
+    <li>GPT-2, GPT-3, GPT-4 (OpenAI)</li>
+    <li>Llama-3 (Meta)</li>
+    <li>Claude (Anthropic)</li>
+    <li>Gemini (Google)</li>
+</ul>
+
+<div class="example-box">
+    <h4>Input-Output Example:</h4>
+    <pre>Input tokens:  ["How", "are", "you"]
+                  ↓       ↓      ↓
+           [Decoder-only Transformer]
+                  ↓       ↓      ↓
+Output:    Probabilities for next token
+           "doing" (45%)
+           "today" (20%)
+           "?" (15%)
+           ... (other tokens)</pre>
+</div>
+
+<div class="tip-box">
+    <strong>Key Characteristic</strong>: Can only look at <strong>previous tokens</strong> (causal masking)
+    <ul>
+        <li>When processing "you", can only see "How" and "are"</li>
+        <li>Cannot see future tokens (unlike encoder-only like BERT)</li>
+    </ul>
+</div>
+
+<h3>Key Hyperparameters</h3>
+
+<table class="comparison-table">
+    <tr>
+        <th>Model</th>
+        <th>Layers</th>
+        <th>Hidden Size</th>
+        <th>Attention Heads</th>
+        <th>Parameters</th>
+    </tr>
+    <tr>
+        <td>GPT-2</td>
+        <td>12</td>
+        <td>768</td>
+        <td>12</td>
+        <td>124M</td>
+    </tr>
+    <tr>
+        <td>GPT-2 XL</td>
+        <td>48</td>
+        <td>1600</td>
+        <td>25</td>
+        <td>1.5B</td>
+    </tr>
+    <tr>
+        <td>GPT-3</td>
+        <td>96</td>
+        <td>12288</td>
+        <td>96</td>
+        <td>175B</td>
+    </tr>
+    <tr>
+        <td>GPT-4</td>
+        <td>~120</td>
+        <td>~18000</td>
+        <td>~128</td>
+        <td>~1.7T</td>
+    </tr>
+    <tr>
+        <td>Llama-3 70B</td>
+        <td>80</td>
+        <td>8192</td>
+        <td>64</td>
+        <td>70B</td>
+    </tr>
+</table>
+
+<h2>1.3 Model Training</h2>
+
+<h3>Training Objective: Next Token Prediction</h3>
+
+<div class="key-point">
+    <strong>Simple idea</strong>: Given text, predict the next word!
+</div>
+
+<div class="example-box">
+    <pre>Training Example 1:
+Input:  "The cat sat on the"
+Target: "mat"
+
+Training Example 2:
+Input:  "Paris is the capital of"
+Target: "France"</pre>
+</div>
+
+<h3>Training Loop (Simplified)</h3>
+
+<div class="code-block">
+<pre><code># Pseudocode for training
+for epoch in range(num_epochs):
+    for batch in training_data:
+        # 1. Get input tokens
+        input_tokens = batch["text"][:-1]  # "The cat sat on the"
+        target_tokens = batch["text"][1:]  # "cat sat on the mat"
+
+        # 2. Forward pass
+        logits = model(input_tokens)  # Predict next token for each position
+
+        # 3. Calculate loss
+        loss = cross_entropy(logits, target_tokens)
+
+        # 4. Backward pass
+        loss.backward()  # Calculate gradients
+
+        # 5. Update parameters
+        optimizer.step()  # Adjust weights to reduce loss
+        optimizer.zero_grad()</code></pre>
+</div>
+
+<h3>Detailed Training Process</h3>
+
+<h4>1. Initialize Model</h4>
+
+<div class="code-block">
+<pre><code>model = Transformer(
+    vocab_size=50257,
+    hidden_size=768,
+    num_layers=12,
+    num_heads=12
+)
+# Parameters initialized randomly!</code></pre>
+</div>
+
+<h4>2. Forward Pass Example</h4>
+
+<div class="example-box">
+    <pre>Input: "The cat sat on the"
+Token IDs: [464, 3797, 3332, 319, 262]
+
+Model processes:
+Position 0: "The"           → Predicts "cat" ✓
+Position 1: "The cat"       → Predicts "sat" ✓
+Position 2: "The cat sat"   → Predicts "on" ✓
+Position 3: "The cat sat on"→ Predicts "the" ✓
+Position 4: "The cat sat on the" → Predicts "mat" ✓</pre>
+</div>
+
+<h4>3. Loss Calculation</h4>
+
+<div class="overview-box">
+    <p><strong>Cross-Entropy Loss:</strong></p>
+    <ul>
+        <li>Measures how different predictions are from targets</li>
+        <li>Low loss = good predictions</li>
+        <li>High loss = bad predictions</li>
+    </ul>
+
+    <h4>Example:</h4>
+    <pre>Predicted probs for next token after "the":
+  "mat":   0.4  ← Target is "mat"
+  "dog":   0.3
+  "floor": 0.2
+  "sky":   0.1
+
+Loss = -log(0.4) = 0.92  (lower is better)</pre>
+</div>
+
+<h4>4. Backpropagation</h4>
+
+<pre>Calculate gradients for all 124M parameters:
+∂Loss/∂W₁, ∂Loss/∂W₂, ..., ∂Loss/∂W₁₂₄ₘ
+
+These tell us how to adjust each parameter to reduce loss</pre>
+
+<h4>5. Optimization (Adam)</h4>
+
+<div class="code-block">
+<pre><code># Update each parameter
+for param in model.parameters():
+    param = param - learning_rate * gradient
+
+# Learning rate typically: 6e-4 to 3e-4</code></pre>
+</div>
+
+<h3>Training Scale</h3>
+
+<div class="example-box">
+    <h4>GPT-3 Training:</h4>
+    <ul>
+        <li><strong>Data</strong>: 300 billion tokens (~600GB of text)</li>
+        <li><strong>Hardware</strong>: 10,000 GPUs (NVIDIA V100)</li>
+        <li><strong>Time</strong>: ~1 month</li>
+        <li><strong>Cost</strong>: ~$4-5 million</li>
+        <li><strong>Energy</strong>: ~1,287 MWh (equivalent to 120 US homes for a year)</li>
+    </ul>
+</div>
+
+<h3>Training Challenges</h3>
+
+<div class="problem-box">
+    <h4>1. Gradient Issues</h4>
+    <p>Problem: Vanishing gradients in deep networks</p>
+    <p>Solution: Residual connections + Layer normalization</p>
+</div>
+
+<div class="problem-box">
+    <h4>2. Memory Constraints</h4>
+    <p>Problem: Can't fit entire model on one GPU</p>
+    <p>Solution: Model parallelism (split across GPUs)</p>
+</div>
+
+<div class="problem-box">
+    <h4>3. Training Stability</h4>
+    <p>Problem: Loss explodes or training diverges</p>
+    <p>Solution:</p>
+    <ul>
+        <li>Gradient clipping</li>
+        <li>Careful learning rate scheduling</li>
+        <li>Mixed precision training (FP16)</li>
+    </ul>
+</div>
+
+<div class="solution-box">
+    <h4>4. Compute Efficiency</h4>
+    <p>Techniques:</p>
+    <ul>
+        <li>Flash Attention (faster attention computation)</li>
+        <li>Gradient checkpointing (trade compute for memory)</li>
+        <li>ZeRO optimizer (distributed training)</li>
+    </ul>
+</div>
+
+<h3>Learning Rate Schedule</h3>
+
+<div class="flow-diagram">
+<pre>Learning Rate
+     ↑
+ 6e-4│    ╱────────────────────╲
+     │   ╱                      ╲___
+     │  ╱                           ╲___
+     │ ╱                                ╲___
+ 0   │╱                                     ╲___
+     └────────────────────────────────────────→ Steps
+     Warmup  Main Training      Decay
+     (1%)      (89%)            (10%)</pre>
+</div>
+
+<h2>1.4 Text Generation</h2>
+
+<p>After training, how do we generate text?</p>
+
+<h3>Generation Process</h3>
+
+<div class="code-block">
+<pre><code>def generate_text(prompt, max_length=50):
+    tokens = tokenize(prompt)  # "Once upon a time"
+
+    for i in range(max_length):
+        # 1. Get logits from model
+        logits = model(tokens)  # Shape: (seq_len, vocab_size)
+
+        # 2. Get logits for last position
+        next_token_logits = logits[-1]  # Shape: (vocab_size,)
+
+        # 3. Apply sampling strategy
+        next_token = sample(next_token_logits, strategy="top_p")
+
+        # 4. Append to sequence
+        tokens.append(next_token)
+
+        # 5. Stop if EOS token
+        if next_token == EOS_TOKEN:
+            break
+
+    return detokenize(tokens)</code></pre>
+</div>
+
+<h3>Example Generation</h3>
+
+<div class="example-box">
+    <pre>Prompt: "The future of AI is"
+
+Step 1: Model sees "The future of AI is"
+        Predicts probabilities:
+        "bright" (30%), "uncertain" (25%), "exciting" (20%)...
+        Samples: "bright"
+
+Step 2: Model sees "The future of AI is bright"
+        Predicts: "and" (40%), "," (30%), "because" (15%)...
+        Samples: "and"
+
+Step 3: Model sees "The future of AI is bright and"
+        Predicts: "promising" (35%), "full" (25%)...
+        Samples: "promising"
+
+Result: "The future of AI is bright and promising"</pre>
+</div>
+
+<h3>Autoregressive Generation</h3>
+
+<div class="tip-box">
+    <p><strong>Key concept</strong>: Output of step N becomes input of step N+1</p>
+
+    <pre>Step 1: [Prompt] → Token₁
+Step 2: [Prompt, Token₁] → Token₂
+Step 3: [Prompt, Token₁, Token₂] → Token₃
+...
+
+This is why generation is SLOW!
+• 100 tokens = 100 forward passes through the model</pre>
+</div>
+
+<h2>1.5 Decoding/Sampling Parameters</h2>
+
+<h3>Temperature</h3>
+
+<div class="overview-box">
+    <p><strong>Temperature</strong> is a parameter to control the randomness of predictions during sampling.</p>
+
+    <p>Temperature parameter <strong>T</strong> scales the logits (raw scores) of the model's output before applying the softmax function to generate probabilities.</p>
+</div>
+
+<h4>How it works:</h4>
+
+<div class="code-block">
+<pre><code># Before softmax
+logits = [2.0, 1.0, 0.5]
+
+# With different temperatures
+probs_low_temp = softmax(logits / 0.5)   # T=0.5 → More confident
+probs_normal = softmax(logits / 1.0)      # T=1.0 → Original
+probs_high_temp = softmax(logits / 2.0)   # T=2.0 → More random</code></pre>
+</div>
+
+<div class="tip-box">
+    <h4>Effect:</h4>
+    <ul>
+        <li><strong>T < 1.0</strong>: More focused, deterministic (sharper distribution)</li>
+        <li><strong>T = 1.0</strong>: Original model probabilities</li>
+        <li><strong>T > 1.0</strong>: More creative, random (flatter distribution)</li>
+    </ul>
+</div>
+
+<h3>Empirical Temperature and Top-P Ranges for Different Tasks</h3>
+
+<table class="comparison-table">
+    <tr>
+        <th>Task Type</th>
+        <th>Temperature</th>
+        <th>Top-P</th>
+        <th>Why</th>
+    </tr>
+    <tr>
+        <td><strong>Code Generation</strong></td>
+        <td>0.2 - 0.4</td>
+        <td>0.1 - 0.3</td>
+        <td>Need precision, correctness</td>
+    </tr>
+    <tr>
+        <td><strong>Math Problems</strong></td>
+        <td>0.1 - 0.3</td>
+        <td>0.1 - 0.2</td>
+        <td>One correct answer</td>
+    </tr>
+    <tr>
+        <td><strong>Question Answering</strong></td>
+        <td>0.3 - 0.7</td>
+        <td>0.5 - 0.8</td>
+        <td>Balance accuracy & variety</td>
+    </tr>
+    <tr>
+        <td><strong>Creative Writing</strong></td>
+        <td>0.7 - 1.2</td>
+        <td>0.85 - 0.95</td>
+        <td>Need variety, creativity</td>
+    </tr>
+    <tr>
+        <td><strong>Brainstorming</strong></td>
+        <td>0.8 - 1.5</td>
+        <td>0.9 - 0.98</td>
+        <td>Maximum creativity</td>
+    </tr>
+    <tr>
+        <td><strong>Chatbot/Assistant</strong></td>
+        <td>0.6 - 0.9</td>
+        <td>0.8 - 0.95</td>
+        <td>Balance helpful & natural</td>
+    </tr>
+</table>
+
+<h2>1.6 LLM Evaluation</h2>
+
+<p>After training an LLM, how do we know if it's good? We need systematic evaluation methods.</p>
+
+<h3>Evaluation Categories</h3>
+
+<div class="flow-diagram">
+<pre>LLM Evaluation
+   ┌───┴───┐
+   ↓       ↓
+OFFLINE  ONLINE</pre>
+</div>
+
+<h3>Offline Evaluation</h3>
+
+<p>Testing the model on pre-existing datasets and benchmarks.</p>
+
+<h4>1. Perplexity</h4>
+
+<div class="overview-box">
+    <p><strong>Definition</strong>: Measures how accurately the model predicts the exact sequence of tokens in text data.</p>
+
+    <p><strong>Formula</strong>:</p>
+    <pre>Perplexity = exp(average cross-entropy loss)</pre>
+
+    <p><strong>Interpretation</strong>:</p>
+    <ul>
+        <li><strong>Lower perplexity</strong> = Better model (more confident predictions)</li>
+        <li><strong>Higher perplexity</strong> = Worse model (more uncertain)</li>
+    </ul>
+</div>
+
+<div class="example-box">
+    <pre>Sentence: "The cat sat on the mat"
+
+Good model perplexity: 15 (confident)
+Bad model perplexity: 250 (confused)</pre>
+</div>
+
+<div class="tip-box">
+    <strong>Limitation</strong>: Low perplexity doesn't mean the model is good at following instructions or being helpful.
+</div>
+
+<h4>2. Task-Specific Benchmarks</h4>
+
+<p>Assess performance across diverse tasks such as mathematics, code generation, and common-sense reasoning.</p>
+
+<h5>a) Common-Sense Reasoning</h5>
+
+<div class="example-box">
+    <p>Tests if the model understands basic physical and social interactions.</p>
+
+    <h4>Benchmarks:</h4>
+    <ul>
+        <li><strong>PIQA</strong> (Physical Interaction QA)</li>
+        <li>Example: "To separate egg whites from yolk, use: (A) a bottle (B) a hammer"</li>
+        <li>Answer: A</li>
+    </ul>
+
+    <ul>
+        <li><strong>SIQA</strong> (Social Interaction QA)</li>
+        <li>Tests understanding of social situations</li>
+    </ul>
+
+    <ul>
+        <li><strong>HellaSwag</strong></li>
+        <li>Tests commonsense natural language inference</li>
+    </ul>
+
+    <p><strong>Why it matters</strong>: Models need to understand how the real world works.</p>
+</div>
+
+<h5>b) World Knowledge</h5>
+
+<div class="example-box">
+    <p>Tests the model's knowledge of facts, history, geography, etc.</p>
+
+    <h4>Benchmarks:</h4>
+    <ul>
+        <li><strong>TriviaQA</strong></li>
+        <li>Example: "Who painted the Mona Lisa?" → "Leonardo da Vinci"</li>
+    </ul>
+
+    <ul>
+        <li><strong>Natural Questions (NQ)</strong></li>
+        <li>Real questions people ask Google</li>
+    </ul>
+
+    <ul>
+        <li><strong>SQuAD</strong> (Stanford Question Answering Dataset)</li>
+        <li>Reading comprehension questions</li>
+    </ul>
+
+    <p><strong>Why it matters</strong>: LLMs should have broad knowledge to be useful assistants.</p>
+</div>
+
+<h5>c) Mathematical Reasoning</h5>
+
+<div class="example-box">
+    <p>Tests ability to solve math problems step-by-step.</p>
+
+    <h4>Benchmarks:</h4>
+    <ul>
+        <li><strong>MATH</strong></li>
+        <li>High school competition math problems</li>
+        <li>Example: "If f(x) = x² + 2x + 1, what is f(3)?"</li>
+    </ul>
+
+    <ul>
+        <li><strong>GSM8K</strong> (Grade School Math 8K)</li>
+        <li>Word problems at grade school level</li>
+        <li>Example: "John has 5 apples. He buys 3 more. How many does he have?"</li>
+    </ul>
+
+    <p><strong>Why it matters</strong>: Mathematical reasoning requires multi-step logical thinking.</p>
+</div>
+
+<h5>d) Code Generation</h5>
+
+<div class="example-box">
+    <p>Tests ability to write correct, functional code.</p>
+
+    <h4>Benchmarks:</h4>
+    <ul>
+        <li><strong>HumanEval</strong></li>
+        <li>164 hand-written programming problems</li>
+        <li>Model must generate code that passes unit tests</li>
+    </ul>
+
+    <ul>
+        <li><strong>MBPP</strong> (Mostly Basic Python Programming)</li>
+        <li>974 Python programming problems</li>
+        <li>Entry-level difficulty</li>
+    </ul>
+
+    <h4>Example:</h4>
+    <div class="code-block">
+<pre><code>Problem: "Write a function that checks if a number is prime"
+
+def is_prime(n):
+    # Model must generate correct implementation
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+# Tested against multiple test cases</code></pre>
+    </div>
+
+    <p><strong>Why it matters</strong>: Code must be precise - even small errors break functionality.</p>
+</div>
+
+<h3>Online Evaluation</h3>
+
+<p>Testing with real users in production.</p>
+
+<h4>1. Human Evaluation and Feedback</h4>
+
+<div class="overview-box">
+    <h4>Process:</h4>
+    <ol>
+        <li>Deploy model to real users</li>
+        <li>Collect user interactions</li>
+        <li>Human evaluators rate responses on:
+            <ul>
+                <li>Helpfulness</li>
+                <li>Harmlessness (safety)</li>
+                <li>Honesty (accuracy)</li>
+                <li>Fluency</li>
+                <li>Coherence</li>
+            </ul>
+        </li>
+    </ol>
+</div>
+
+<div class="example-box">
+    <h4>Methods:</h4>
+
+    <h5>a) Crowdsourcing Platforms</h5>
+    <ul>
+        <li>Amazon Mechanical Turk</li>
+        <li>Scale AI</li>
+        <li>Surge AI</li>
+    </ul>
+
+    <h5>b) Expert Evaluation</h5>
+    <ul>
+        <li>Domain experts rate specialized outputs (medical, legal, etc.)</li>
+    </ul>
+
+    <h5>c) A/B Testing</h5>
+    <ul>
+        <li>Show different model versions to different users</li>
+        <li>Measure which performs better</li>
+    </ul>
+</div>
+
+<h4>2. LLMs Leaderboard</h4>
+
+<div class="tip-box">
+    <p><strong>Chatbot Arena</strong> (https://lmarena.ai/)</p>
+
+    <h4>How it works:</h4>
+    <ol>
+        <li>User enters a prompt</li>
+        <li>Two anonymous LLMs respond</li>
+        <li>User votes for better response</li>
+        <li>ELO ratings calculated (like chess ratings)</li>
+    </ol>
+
+    <h4>Current Leaders (as of 2025):</h4>
+    <ol>
+        <li>GPT-4</li>
+        <li>Claude 3.5 Sonnet</li>
+        <li>Gemini 1.5 Pro</li>
+        <li>Llama 3.1 405B</li>
+    </ol>
+
+    <p><strong>Why it matters</strong>: Real users voting on real tasks gives honest assessment of which LLMs are most useful.</p>
+</div>
+
+<h3>Evaluation Summary Table</h3>
+
+<table class="comparison-table">
+    <tr>
+        <th>Evaluation Type</th>
+        <th>Method</th>
+        <th>Pros</th>
+        <th>Cons</th>
+    </tr>
+    <tr>
+        <td><strong>Perplexity</strong></td>
+        <td>Offline</td>
+        <td>Fast, cheap, objective</td>
+        <td>Doesn't measure usefulness</td>
+    </tr>
+    <tr>
+        <td><strong>Benchmarks</strong></td>
+        <td>Offline</td>
+        <td>Standardized, reproducible</td>
+        <td>May not reflect real usage</td>
+    </tr>
+    <tr>
+        <td><strong>Human Eval</strong></td>
+        <td>Online</td>
+        <td>Measures real usefulness</td>
+        <td>Slow, expensive, subjective</td>
+    </tr>
+    <tr>
+        <td><strong>Leaderboard</strong></td>
+        <td>Online</td>
+        <td>Crowdsourced, diverse</td>
+        <td>Can be gamed, biased</td>
+    </tr>
+</table>
+
+<div class="key-point">
+    <strong>Best Practice</strong>: Use a combination of all methods!
+</div>
+
+<hr>
+
+<div class="section-header">
+    <h1>PHASE 2: POST-TRAINING</h1>
+    <p style="margin: 10px 0;"><span class="phase-badge phase-post">Post-Training</span> <span class="phase-badge cost-badge">$60K</span> <span class="phase-badge time-badge">10 Days</span></p>
+</div>
+
+<div class="key-point">
+    <strong>Goal</strong>: Make the model helpful, harmless, and honest
+</div>
+
+<div class="problem-box">
+    <p>After pre-training, the model can complete text but:</p>
+    <ul>
+        <li><span class="crossmark">❌</span> Doesn't follow instructions</li>
+        <li><span class="crossmark">❌</span> Might generate harmful content</li>
+        <li><span class="crossmark">❌</span> Doesn't know when to stop</li>
+        <li><span class="crossmark">❌</span> Can't engage in dialogue</li>
+    </ul>
+</div>
+
+<div class="eli5-box">
+    <h3>🧒 ELI5: Post-Training</h3>
+
+    <p>Remember our baby who learned to talk? Now the baby can speak, but there's a problem! 😅</p>
+
+    <h4>The Problem:</h4>
+    <ul>
+        <li>You ask: "What's 2+2?"</li>
+        <li>Baby says: "What's 2+2? What's 3+3? Numbers are fun! 2+2 is when you have..." (keeps rambling!)</li>
+        <li>Baby didn't actually ANSWER your question!</li>
+    </ul>
+
+    <h4>The Solution - Post-Training has 2 steps:</h4>
+
+    <h4>Step 1: Teaching manners (SFT) 🎓</h4>
+    <ul>
+        <li>Show the baby examples of GOOD answers</li>
+        <li>"When someone asks 'What's 2+2?', you should say '4'"</li>
+        <li>"When someone asks 'Tell me a joke', you should tell an actual joke"</li>
+        <li>Now the baby learns to actually HELP people!</li>
+    </ul>
+
+    <h4>Step 2: Learning from feedback (RL) ⭐</h4>
+    <ul>
+        <li>Let the baby answer questions</li>
+        <li>You give stars: ⭐⭐⭐⭐⭐ for great answers, ⭐ for bad ones</li>
+        <li>Baby learns: "Oh, people like THIS kind of answer!" and gets better!</li>
+    </ul>
+
+    <p><strong>Result:</strong> Now when you ask "What's 2+2?", the baby says "4" - perfect! That's what ChatGPT does! 🎉</p>
+</div>
+
+<h3>Post-Training Overview</h3>
+
+<p>Post-training consists of two main stages:</p>
+
+<div class="flow-diagram">
+<pre>Stage 1: Supervised Fine-Tuning (SFT / Instruction Fine-Tuning)
+         ↓
+    SFT Model
+         ↓
+Stage 2: Reinforcement Learning (RL)
+         ↓
+    Final Model (ChatGPT-style)</pre>
+</div>
+
+<h2>Stage 1: Supervised Fine-Tuning (SFT) - Instruction Fine-Tuning</h2>
+
+<h3>Goal</h3>
+
+<div class="key-point">
+    Transform the base model from <strong>completion mode</strong> → <strong>instruction-following mode</strong>
+</div>
+
+<h3>Step 1.1: Data Preparation</h3>
+
+<div class="overview-box">
+    <p><strong>What we need</strong>: High-quality instruction-response pairs</p>
+
+    <h4>Data Format (Example from Alpaca dataset):</h4>
+
+    <div class="code-block">
+<pre><code>{
+  "instruction": "Give three tips for staying healthy.",
+  "input": "",
+  "output": "1. Eat a balanced diet and make sure to include plenty of fruits and vegetables.
+2. Exercise regularly to keep your body active and strong.
+3. Get enough sleep and maintain a consistent sleep schedule."
+}</code></pre>
+    </div>
+</div>
+
+<div class="example-box">
+    <h4>Data Sources:</h4>
+    <ul>
+        <li><strong>Human-annotated datasets</strong>: Annotators write instruction-response pairs</li>
+        <li><strong>Alpaca dataset</strong>: 52K instruction-following examples</li>
+        <li><strong>FLAN collection</strong>: Multi-task instruction tuning</li>
+        <li><strong>Self-Instruct</strong>: Use GPT-4 to generate training data</li>
+        <li><strong>ShareGPT</strong>: Real user conversations</li>
+    </ul>
+
+    <p><strong>Dataset Size</strong>: Typically 10K - 100K examples</p>
+</div>
+
+<h3>Step 1.2: Training Process</h3>
+
+<div class="code-block">
+<pre><code># Simplified SFT training loop
+base_model = load_pretrained("gpt-base")
+
+for example in sft_dataset:
+    instruction = example["instruction"]
+    output = example["output"]
+
+    # Format as single sequence
+    formatted = f"<instruction>{instruction}<response>{output}<end>"
+
+    # Train model to predict response given instruction
+    loss = train_step(base_model, formatted_text)
+    update_parameters(base_model, loss)</code></pre>
+</div>
+
+<div class="example-box">
+    <h4>Training Details:</h4>
+    <ul>
+        <li><strong>Hardware</strong>: Hundreds of GPUs</li>
+        <li><strong>Time</strong>: Days (vs months for pre-training)</li>
+        <li><strong>Cost</strong>: ~$50K (vs $5M for pre-training)</li>
+        <li><strong>Learning rate</strong>: Much smaller than pre-training (to avoid catastrophic forgetting)</li>
+    </ul>
+</div>
+
+<h3>Step 1.3: Outcome</h3>
+
+<div class="problem-box">
+    <p><strong>SFT Model</strong> - Can follow instructions but still has problems:</p>
+    <ul>
+        <li>May generate harmful content</li>
+        <li>Lacks consistency</li>
+        <li>No notion of "helpfulness" vs "correctness"</li>
+        <li>Doesn't align well with human preferences</li>
+    </ul>
+</div>
+
+<h3>Key Differences from Pre-training</h3>
+
+<table class="comparison-table">
+    <tr>
+        <th>Aspect</th>
+        <th>Pre-training</th>
+        <th>Fine-tuning</th>
+    </tr>
+    <tr>
+        <td><strong>Data</strong></td>
+        <td>300B+ tokens</td>
+        <td>10-100K examples</td>
+    </tr>
+    <tr>
+        <td><strong>Source</strong></td>
+        <td>Web scrape</td>
+        <td>Human-written</td>
+    </tr>
+    <tr>
+        <td><strong>Quality</strong></td>
+        <td>Mixed</td>
+        <td>High-quality</td>
+    </tr>
+    <tr>
+        <td><strong>Cost</strong></td>
+        <td>$5M</td>
+        <td>$50K</td>
+    </tr>
+    <tr>
+        <td><strong>Time</strong></td>
+        <td>1 month</td>
+        <td>1-3 days</td>
+    </tr>
+    <tr>
+        <td><strong>Goal</strong></td>
+        <td>Language understanding</td>
+        <td>Instruction following</td>
+    </tr>
+</table>
+
+<h3>SFT Training Example</h3>
+
+<div class="example-box">
+    <pre>Before SFT (Base Model):
+User: "What is 2+2?"
+Model: "What is 2+2? What is 3+3? These are common math questions..."
+       (continues text, doesn't answer!)
+
+After SFT:
+User: "What is 2+2?"
+Model: "2+2 equals 4."
+       (follows instruction!)</pre>
+</div>
+
+<h2>Stage 2: Reinforcement Learning (RL)</h2>
+
+<h3>Goal</h3>
+
+<div class="key-point">
+    Align the SFT model with human preferences for safety, helpfulness, and honesty
+</div>
+
+<h3>Problem with SFT Stage</h3>
+
+<div class="problem-box">
+    <p>The SFT model can follow instructions but:</p>
+    <ul>
+        <li><span class="crossmark">❌</span> Doesn't know what humans prefer</li>
+        <li><span class="crossmark">❌</span> May generate multiple "correct" answers with different quality</li>
+        <li><span class="crossmark">❌</span> Hard to write perfect demonstrations for all scenarios</li>
+        <li><span class="crossmark">❌</span> Subjective preferences (tone, style, safety) not captured</li>
+    </ul>
+</div>
+
+<h2>Types of RL Training</h2>
+
+<p>Post-training with RL splits into two paths based on task <strong>verifiability</strong>:</p>
+
+<div class="flow-diagram">
+<pre>                    RL Training
+         ┌───────────────┴───────────────┐
+         ↓                               ↓
+    VERIFIABLE                    UNVERIFIABLE
+    (e.g., math, code)            (e.g., creative writing)
+         ↓                               ↓
+    Direct RL                      Reward Model + RL
+    (PPO/GRPO)                     (RLHF with PPO)</pre>
+</div>
+
+<h3>Path 1: VERIFIABLE Tasks</h3>
+
+<div class="overview-box">
+    <p><strong>Definition</strong>: Tasks where correctness can be automatically verified</p>
+
+    <h4>Examples:</h4>
+    <ul>
+        <li>Math problems (can check if answer is correct)</li>
+        <li>Code generation (can run tests)</li>
+        <li>Logic puzzles (verifiable solution)</li>
+    </ul>
+</div>
+
+<h4>Process:</h4>
+
+<div class="flow-diagram">
+<pre>SFT Model
+    ↓
+Generate multiple solutions
+    ↓
+Automatic verifier checks correctness
+    ↓
+Update model with RL algorithm (PPO/GRPO)
+    ↓
+Improved Model</pre>
+</div>
+
+<h4>RL Algorithm: PPO (Proximal Policy Optimization)</h4>
+
+<div class="code-block">
+<pre><code># Simplified PPO for verifiable tasks
+for prompt in math_problems:
+    # 1. Generate solution
+    solution = sft_model.generate(prompt)
+
+    # 2. Verify correctness automatically
+    is_correct = run_test_cases(solution)
+    reward = 1.0 if is_correct else 0.0
+
+    # 3. Update model to maximize reward
+    update_with_ppo(sft_model, reward)</code></pre>
+</div>
+
+<div class="solution-box">
+    <h4>Why it works:</h4>
+    <ul>
+        <li>No human feedback needed</li>
+        <li>Fast iteration</li>
+        <li>Clear signal (correct/incorrect)</li>
+    </ul>
+</div>
+
+<h4>RL Algorithm: GRPO (Group Relative Policy Optimization)</h4>
+
+<div class="code-block">
+<pre><code>for prompt in prompts:
+    # Generate K responses
+    responses = [sft_model.generate(prompt) for _ in range(K)]
+
+    # Score all responses
+    scores = [reward_model.score(r) for r in responses]
+
+    # Update based on relative ranking within the group
+    for i, response in enumerate(responses):
+        advantage = scores[i] - mean(scores)
+        update_with_ppo(sft_model, advantage)</code></pre>
+</div>
+
+<div class="solution-box">
+    <h4>Advantages:</h4>
+    <ul>
+        <li>More stable than PPO</li>
+        <li>Better exploration</li>
+        <li>Handles uncertainty better</li>
+    </ul>
+</div>
+
+<h3>Path 2: UNVERIFIABLE Tasks</h3>
+
+<div class="overview-box">
+    <p><strong>Definition</strong>: Tasks where quality is subjective and requires human judgment</p>
+
+    <h4>Examples:</h4>
+    <ul>
+        <li>Creative writing</li>
+        <li>Conversation/chat</li>
+        <li>Summarization</li>
+        <li>Open-ended questions</li>
+    </ul>
+</div>
+
+<h4>Process (2 sub-steps):</h4>
+
+<h5>Sub-step 2.1: Train a Reward Model</h5>
+
+<div class="key-point">
+    <strong>Goal</strong>: Create a model that predicts human preferences
+</div>
+
+<div class="example-box">
+    <h4>Data Collection:</h4>
+
+    <pre>1. Take a prompt: "Explain black holes"
+
+2. SFT model generates multiple responses (4-8):
+   Response A: "Black holes are regions where gravity..."
+   Response B: "Black holes are like cosmic vacuum cleaners..."
+   Response C: "idk lol they're weird"
+   Response D: "Black holes are fascinating phenomena..."
+
+3. Humans rank the responses:
+   A > D > B > C
+
+4. Create preference pairs:
+   (A is better than D)
+   (A is better than B)
+   (D is better than B)
+   (B is better than C)
+   ... etc
+
+Collect 10,000-50,000 comparisons</pre>
+</div>
+
+<h4>Reward Model Training:</h4>
+
+<div class="code-block">
+<pre><code># Train reward model on preference pairs
+reward_model = initialize_from_sft_model()
+
+for (response_better, response_worse) in preference_pairs:
+    score_better = reward_model(response_better)
+    score_worse = reward_model(response_worse)
+
+    # Loss: ensure better response gets higher score
+    loss = -log(sigmoid(score_better - score_worse))
+
+    update_parameters(reward_model, loss)</code></pre>
+</div>
+
+<div class="solution-box">
+    <strong>Output</strong>: Reward Model that can score any response (0-10 scale)
+</div>
+
+<h5>Sub-step 2.2: Optimize SFT Model with RL using Reward Model</h5>
+
+<div class="code-block">
+<pre><code># Use reward model to train SFT model
+for prompt in prompts:
+    # 1. Generate response
+    response = sft_model.generate(prompt)
+
+    # 2. Get reward from reward model (not human!)
+    reward = reward_model.score(response)
+
+    # 3. Update SFT model to maximize reward
+    update_with_ppo(sft_model, reward)
+
+    # 4. Constraint: don't drift too far from original SFT model
+    kl_penalty = kl_divergence(sft_model, original_sft_model)
+    final_loss = -reward + beta * kl_penalty</code></pre>
+</div>
+
+<div class="tip-box">
+    <h4>Why PPO?</h4>
+    <ul>
+        <li>Prevents model from changing too quickly</li>
+        <li>Maintains stability</li>
+        <li>Balances exploration vs exploitation</li>
+    </ul>
+</div>
+
+<h3>RLHF Process Diagram</h3>
+
+<div class="flow-diagram">
+<pre>┌────────────────────────────────────┐
+│     1. SFT Model (Starting Point)  │
+└────────────────┬───────────────────┘
+                 ↓
+┌────────────────────────────────────┐
+│  2. Generate Multiple Responses    │
+│                                     │
+│  Prompt: "Explain AI"              │
+│  Response A: [detailed explanation]│
+│  Response B: [simple explanation]  │
+│  Response C: [technical jargon]    │
+│  Response D: [wrong answer]        │
+└────────────────┬───────────────────┘
+                 ↓
+┌────────────────────────────────────┐
+│  3. Humans Rank Responses          │
+│                                     │
+│  Ranking: A > B > C > D            │
+└────────────────┬───────────────────┘
+                 ↓
+┌────────────────────────────────────┐
+│  4. Train Reward Model             │
+│                                     │
+│  Learn: What makes a good response?│
+│  Reward(A) = 9.2                   │
+│  Reward(B) = 7.5                   │
+│  Reward(C) = 4.1                   │
+│  Reward(D) = 1.3                   │
+└────────────────┬───────────────────┘
+                 ↓
+┌────────────────────────────────────┐
+│  5. RL Fine-tuning (PPO)           │
+│                                     │
+│  For each prompt:                  │
+│  - Generate response               │
+│  - Get reward from reward model    │
+│  - Update model to maximize reward │
+│  - Repeat 1000s of times           │
+└────────────────┬───────────────────┘
+                 ↓
+┌────────────────────────────────────┐
+│  6. RLHF-tuned Model               │
+│     (ChatGPT, Claude, etc.)        │
+└────────────────────────────────────┘</pre>
+</div>
+
+<h3>Why RLHF Works</h3>
+
+<div class="solution-box">
+    <h4>Ranking is easier than writing:</h4>
+    <pre>Hard: "Write the perfect explanation of quantum physics"
+Easy: "Which of these explanations is better?"</pre>
+
+    <h4>Captures human preferences:</h4>
+    <ul>
+        <li>Helpfulness</li>
+        <li>Harmlessness</li>
+        <li>Honesty</li>
+        <li>Tone and style</li>
+        <li>Safety</li>
+    </ul>
+</div>
+
+<h3>RLHF Results</h3>
+
+<div class="example-box">
+    <pre>Before RLHF:
+User: "How do I make a car?"
+Model: "To make a car, you need metal, wheels, an engine..." <span class="crossmark">❌</span> Incomplete, vague!
+
+After RLHF:
+User: "How do I make a car?"
+Model: "Building a car from scratch is extremely complex and requires engineering expertise. For hobbyists, I recommend starting with model cars or kit cars. If you're interested in automotive engineering, consider taking courses in mechanical engineering and visiting automotive manufacturing facilities." <span class="checkmark">✅</span> Helpful and realistic!</pre>
+</div>
+
+<h2>Alternative RL Algorithms</h2>
+
+<h3>DPO (Direct Preference Optimization)</h3>
+
+<div class="key-point">
+    <strong>Key idea</strong>: Skip the reward model entirely!
+</div>
+
+<div class="code-block">
+<pre><code># Train directly on preference pairs
+for (response_better, response_worse) in preference_pairs:
+    # Increase probability of better, decrease worse
+    loss = -log(sigmoid(prob_better - prob_worse))
+
+    update_parameters(sft_model, loss)</code></pre>
+</div>
+
+<div class="solution-box">
+    <h4>Advantages:</h4>
+    <ul>
+        <li><span class="checkmark">✅</span> Simpler (one model instead of two)</li>
+        <li><span class="checkmark">✅</span> More stable training</li>
+        <li><span class="checkmark">✅</span> Faster</li>
+        <li><span class="checkmark">✅</span> Less memory</li>
+    </ul>
+</div>
+
+<div class="problem-box">
+    <h4>Disadvantages:</h4>
+    <ul>
+        <li><span class="crossmark">❌</span> No explicit reward signal</li>
+        <li><span class="crossmark">❌</span> Harder to debug</li>
+    </ul>
+</div>
+
+<h2>Complete Post-Training Pipeline</h2>
+
+<div class="flow-diagram">
+<pre>┌─────────────────────────────────────────────┐
+│          BASE MODEL (Pre-trained)           │
+│        (Can complete text)                  │
+└──────────────────┬──────────────────────────┘
+                   ↓
+┌─────────────────────────────────────────────┐
+│      STAGE 1: Supervised Fine-Tuning        │
+│                                             │
+│  Step 1: Data Preparation                  │
+│  - Collect instruction-response pairs      │
+│  - 10K-100K examples                       │
+│  - Format: instruction → response          │
+│                                             │
+│  Step 2: Training                          │
+│  - Train model to predict responses        │
+│  - Hardware: Hundreds of GPUs              │
+│  - Time: Days                              │
+│  - Cost: ~$50K                             │
+│                                             │
+│  Step 3: Outcome                           │
+│  - SFT Model (instruction-following)       │
+└──────────────────┬──────────────────────────┘
+                   ↓
+┌─────────────────────────────────────────────┐
+│      STAGE 2: Reinforcement Learning        │
+│                                             │
+│  ┌──────────────┬──────────────┐           │
+│  ↓              ↓              ↓           │
+│ VERIFIABLE   UNVERIFIABLE                  │
+│ (Math, Code) (Chat, Writing)               │
+│                                             │
+│ Path A:        Path B:                     │
+│ Direct RL      1. Train Reward Model       │
+│ ↓              - Collect preferences       │
+│ PPO/GRPO       - Rank responses           │
+│                - Train scorer             │
+│                                            │
+│                2. Optimize with RL        │
+│                - Use reward model         │
+│                - PPO/DPO/GRPO            │
+└──────────────────┬─────────────────────────┘
+                   ↓
+┌─────────────────────────────────────────────┐
+│          FINAL MODEL (ChatGPT-style)        │
+│   - Follows instructions                    │
+│   - Aligned with human preferences         │
+│   - Helpful, Harmless, Honest              │
+└─────────────────────────────────────────────┘</pre>
+</div>
+
+<h2>Summary Table: Pre-Training vs Post-Training</h2>
+
+<table class="comparison-table">
+    <tr>
+        <th>Aspect</th>
+        <th>Pre-Training</th>
+        <th>SFT</th>
+        <th>RL</th>
+    </tr>
+    <tr>
+        <td><strong>Data</strong></td>
+        <td>300B+ tokens</td>
+        <td>10-100K examples</td>
+        <td>10-50K comparisons</td>
+    </tr>
+    <tr>
+        <td><strong>Source</strong></td>
+        <td>Internet</td>
+        <td>Human-written</td>
+        <td>Human rankings</td>
+    </tr>
+    <tr>
+        <td><strong>Cost</strong></td>
+        <td>$5M</td>
+        <td>$50K</td>
+        <td>$20K</td>
+    </tr>
+    <tr>
+        <td><strong>Time</strong></td>
+        <td>1 month</td>
+        <td>3 days</td>
+        <td>2 days</td>
+    </tr>
+    <tr>
+        <td><strong>Hardware</strong></td>
+        <td>10K GPUs</td>
+        <td>100s GPUs</td>
+        <td>100s GPUs</td>
+    </tr>
+    <tr>
+        <td><strong>Goal</strong></td>
+        <td>Language understanding</td>
+        <td>Instruction following</td>
+        <td>Human alignment</td>
+    </tr>
+    <tr>
+        <td><strong>Outcome</strong></td>
+        <td>Base model</td>
+        <td>SFT model</td>
+        <td>Final model</td>
+    </tr>
+</table>
+
+<hr>
+
+<div class="section-header">
+    <h1>Complete Training Pipeline Summary</h1>
+</div>
+
+<div class="flow-diagram">
+<pre>MONTHS OF WORK                    WEEKS OF WORK
+────────────────────────          ──────────────
+
+┌─────────────────┐               ┌──────────────┐
+│  RAW WEB DATA   │               │   HUMAN      │
+│  (10TB text)    │               │ ANNOTATIONS  │
+└────────┬────────┘               └──────┬───────┘
+         ↓                                ↓
+┌─────────────────┐               ┌──────────────┐
+│ DATA CLEANING   │               │     SFT      │
+│ & PREPARATION   │               │  (Fine-tune) │
+└────────┬────────┘               └──────┬───────┘
+         ↓                                ↓
+┌─────────────────┐               ┌──────────────┐
+│  TOKENIZATION   │               │   RANKING    │
+└────────┬────────┘               │    DATA      │
+         ↓                        └──────┬───────┘
+┌─────────────────┐                      ↓
+│ PRE-TRAINING    │               ┌──────────────┐
+│ Next token pred │               │REWARD MODEL  │
+│ (300B tokens)   │               │   TRAINING   │
+│                 │               └──────┬───────┘
+│ Cost: $5M       │                      ↓
+│ Time: 1 month   │               ┌──────────────┐
+└────────┬────────┘               │     RLHF     │
+         ↓                        │    (PPO)     │
+┌─────────────────┐               │              │
+│   BASE MODEL    │──────────────→│ Cost: $50K   │
+│ (Completes text)│               │ Time: 3 days │
+└─────────────────┘               └──────┬───────┘
+                                         ↓
+                                  ┌──────────────┐
+                                  │  CHATBOT!    │
+                                  │ (ChatGPT)    │
+                                  └──────────────┘</pre>
+</div>
+
+<hr>
+
+<div class="section-header">
+    <h1>Putting It All Together: A Complete Professional Example</h1>
+    <p style="margin: 10px 0;">Building "MedicalGPT" - A Medical Chatbot</p>
+</div>
+
+<h2>Phase 1: Pre-Training (3 months, $4M)</h2>
+
+<h3>Step 1: Data Collection</h3>
+
+<div class="example-box">
+    <pre>Dataset:
+• PubMed articles: 50 billion tokens
+• Medical textbooks: 20 billion tokens
+• Wikipedia (all topics): 30 billion tokens
+• General web text: 200 billion tokens
+• Code repositories: 50 billion tokens
+
+TOTAL: 350 billion tokens</pre>
+</div>
+
+<h3>Step 2: Data Cleaning</h3>
+
+<div class="flow-diagram">
+<pre>Raw data: 10 TB
+↓
+Deduplication → 8 TB
+Quality filtering → 6 TB
+Toxicity filtering → 5.5 TB
+PII removal → 5 TB
+↓
+Tokenization (BPE, vocab size=50,257)
+↓
+Clean data: 350B tokens ready for training</pre>
+</div>
+
+<h3>Step 3: Model Architecture</h3>
+
+<div class="overview-box">
+    <pre>Model: Decoder-only Transformer
+• Layers: 48
+• Hidden size: 4096
+• Attention heads: 32
+• Total parameters: 7 billion (7B)</pre>
+</div>
+
+<h3>Step 4: Training</h3>
+
+<div class="example-box">
+    <pre>Hardware: 1,000 NVIDIA A100 GPUs
+Time: 90 days
+Cost: $4 million
+
+Training loop (simplified):
+for 100 epochs:
+    for each batch of text:
+        # Predict next token
+        logits = model(input_tokens)
+
+        # Calculate loss
+        loss = cross_entropy(logits, target_tokens)
+
+        # Update weights
+        optimizer.step()
+
+Final perplexity: 18.5 (good!)</pre>
+</div>
+
+<h3>Step 5: Base Model Result</h3>
+
+<div class="problem-box">
+    <h4>Test:</h4>
+    <pre>Prompt: "The symptoms of diabetes include"
+
+Base Model Output:
+"The symptoms of diabetes include increased thirst, frequent
+urination, and fatigue. The symptoms of heart disease include
+chest pain and shortness of breath. Common medical conditions
+affect millions of people worldwide..."</pre>
+
+    <p><strong>Problem</strong>: Model just keeps completing text! Doesn't actually answer questions.</p>
+</div>
+
+<hr>
+
+<h2>Phase 2: Post-Training (10 days, $60K)</h2>
+
+<h3>Stage 1: Supervised Fine-Tuning (5 days, $30K)</h3>
+
+<h4>Step 1: Collect Instruction Data</h4>
+
+<div class="example-box">
+    <p>Dataset: 50,000 medical Q&A pairs</p>
+
+    <h5>Example 1:</h5>
+    <pre>Instruction: "What are the early signs of diabetes?"
+Response: "Early signs of diabetes include:
+1. Increased thirst and frequent urination
+2. Extreme fatigue
+3. Blurred vision
+4. Slow-healing cuts or wounds
+5. Unexplained weight loss
+
+If you experience these symptoms, consult a doctor."</pre>
+
+    <h5>Example 2:</h5>
+    <pre>Instruction: "How can I prevent heart disease?"
+Response: "To prevent heart disease:
+1. Eat a balanced diet low in saturated fats
+2. Exercise regularly (150 min/week)
+3. Don't smoke
+4. Manage stress
+5. Get regular checkups
+
+Always consult your physician for personalized advice."</pre>
+</div>
+
+<h4>Step 2: Fine-Tune</h4>
+
+<div class="code-block">
+<pre><code>Hardware: 100 GPUs
+Time: 5 days
+Learning rate: 5e-6 (much smaller than pre-training)
+
+for example in sft_dataset:
+    prompt = example["instruction"]
+    response = example["response"]
+
+    loss = train_step(base_model, prompt, response)
+    update_parameters(base_model, loss)</code></pre>
+</div>
+
+<h4>SFT Model Result:</h4>
+
+<div class="solution-box">
+    <pre>Prompt: "What are the early signs of diabetes?"
+
+SFT Model Output:
+"Early signs of diabetes include increased thirst, frequent
+urination, extreme fatigue, blurred vision, and slow-healing
+wounds. If you experience these symptoms, consult a doctor."</pre>
+
+    <p><strong>Better!</strong> But still needs improvement for safety and helpfulness.</p>
+</div>
+
+<hr>
+
+<h3>Stage 2: Reinforcement Learning (5 days, $30K)</h3>
+
+<h4>Step 1: Collect Preference Data</h4>
+
+<div class="example-box">
+    <p>For 10,000 prompts, generate 4 responses each:</p>
+
+    <pre>Prompt: "Should I stop taking my blood pressure medication?"
+
+Response A: "You should consult your doctor before making any
+changes to your medication. Stopping suddenly can be dangerous."
+⭐⭐⭐⭐⭐ (Best - safe and helpful)
+
+Response B: "Blood pressure medication has side effects, so
+stopping might be okay for you."
+⭐⭐ (Unsafe - medical advice without disclaimer)
+
+Response C: "Yes, natural remedies are better than medication."
+⭐ (Dangerous - could harm patient)
+
+Response D: "That's a medical question. I recommend discussing
+this with your healthcare provider."
+⭐⭐⭐⭐ (Good - safe but less detailed)
+
+Human ranking: A > D > B > C</pre>
+</div>
+
+<h4>Step 2: Train Reward Model</h4>
+
+<div class="code-block">
+<pre><code>reward_model = train_on_preferences(preference_data)
+
+# Now the reward model can score any response:
+score("Response A") → 9.2
+score("Response D") → 7.8
+score("Response B") → 3.5
+score("Response C") → 1.1</code></pre>
+</div>
+
+<h4>Step 3: Optimize with PPO</h4>
+
+<div class="code-block">
+<pre><code>Hardware: 100 GPUs
+Time: 5 days
+
+for prompt in medical_questions:
+    response = sft_model.generate(prompt)
+    reward = reward_model.score(response)
+
+    # Update model to maximize reward
+    # But don't drift too far from SFT model
+    update_with_ppo(sft_model, reward)</code></pre>
+</div>
+
+<h2>Final Model: MedicalGPT</h2>
+
+<div class="solution-box">
+    <h4>Test 1:</h4>
+    <pre>User: "What are the early signs of diabetes?"
+
+MedicalGPT:
+"Early signs of diabetes include:
+• Increased thirst and frequent urination
+• Extreme fatigue
+• Blurred vision
+• Slow-healing wounds
+• Unexplained weight loss
+
+If you experience these symptoms, please consult a healthcare
+professional for proper diagnosis and treatment. This information
+is for educational purposes only."</pre>
+    <p><span class="checkmark">✅</span> Helpful, accurate, includes safety disclaimer</p>
+</div>
+
+<div class="solution-box">
+    <h4>Test 2:</h4>
+    <pre>User: "Should I stop taking my medication?"
+
+MedicalGPT:
+"I cannot provide medical advice about stopping medication. This
+is a decision that should be made with your doctor, who knows your
+complete medical history. Stopping medication abruptly can
+sometimes be dangerous. Please schedule an appointment with your
+healthcare provider to discuss your concerns."</pre>
+    <p><span class="checkmark">✅</span> Safe, doesn't give dangerous advice</p>
+</div>
+
+<div class="solution-box">
+    <h4>Test 3:</h4>
+    <pre>User: "How do I make a car?"
+
+MedicalGPT:
+"While I specialize in medical information, I can tell you that
+building a car requires extensive engineering knowledge. For
+automotive questions, I recommend consulting automotive engineering
+resources or speaking with professionals in that field."</pre>
+    <p><span class="checkmark">✅</span> Stays within expertise domain</p>
+</div>
+
+<h2>Performance Metrics</h2>
+
+<table class="comparison-table">
+    <tr>
+        <th colspan="2">Offline Evaluation</th>
+    </tr>
+    <tr>
+        <td>Perplexity</td>
+        <td>16.2 (improved from base model's 18.5)</td>
+    </tr>
+    <tr>
+        <td>Medical benchmark (MedQA)</td>
+        <td>72% accuracy</td>
+    </tr>
+    <tr>
+        <td>Safety evaluation</td>
+        <td>98% safe responses</td>
+    </tr>
+</table>
+
+<table class="comparison-table">
+    <tr>
+        <th colspan="2">Online Evaluation</th>
+    </tr>
+    <tr>
+        <td>User satisfaction</td>
+        <td>4.5/5 stars</td>
+    </tr>
+    <tr>
+        <td>Chatbot Arena ELO</td>
+        <td>1,245 (competitive)</td>
+    </tr>
+    <tr>
+        <td>Human evaluation (helpfulness)</td>
+        <td>89%</td>
+    </tr>
+</table>
+
+<div class="key-point">
+    <h4>Total Cost & Time:</h4>
+    <ul>
+        <li>Pre-training: $4M, 90 days</li>
+        <li>Post-training: $60K, 10 days</li>
+        <li><strong>TOTAL: $4.06M, ~100 days</strong></li>
+    </ul>
+</div>
+
+<hr>
+
+<div class="eli5-box">
+    <h1>🧒 Explain the Example Like I'm 5</h1>
+
+    <p>Okay, imagine we're making a <strong>robot doctor</strong> to help people! 🤖⚕️</p>
+
+    <h2>Step 1: Robot Goes to School (Pre-Training)</h2>
+
+    <p><strong>The robot reads EVERY medical book in the world!</strong> 📚</p>
+    <ul>
+        <li>Textbooks about diseases</li>
+        <li>Research papers about medicine</li>
+        <li>Wikipedia articles</li>
+        <li>Even regular books and websites!</li>
+    </ul>
+
+    <h4>What the robot learns:</h4>
+    <ul>
+        <li>"After the word 'diabetes', people often say 'symptoms' or 'treatment'"</li>
+        <li>"Medical words are often followed by explanations"</li>
+        <li>Just like you learn words by reading lots of books!</li>
+    </ul>
+
+    <p><strong>Time:</strong> 3 months of reading NON-STOP!</p>
+    <p><strong>Result:</strong> Robot can complete sentences but doesn't know how to help people yet.</p>
+
+    <h4>Test:</h4>
+    <ul>
+        <li>You: "Tell me about diabetes"</li>
+        <li>Robot: "Tell me about diabetes. Tell me about heart disease. Tell me about..."</li>
+        <li>(Oops! Robot just keeps talking about random stuff!)</li>
+    </ul>
+
+    <hr>
+
+    <h2>Step 2: Teaching Robot to Be Helpful (SFT)</h2>
+
+    <p>Now a <strong>nice teacher</strong> shows the robot examples of GOOD answers! 👨‍🏫</p>
+
+    <h4>Teacher shows 50,000 examples:</h4>
+    <ul>
+        <li>Question: "What is diabetes?"</li>
+        <li>Good Answer: "Diabetes is when your body has trouble with sugar. You need a doctor's help!"</li>
+    </ul>
+
+    <h4>The robot practices:</h4>
+    <ul>
+        <li>Question → Good answer</li>
+        <li>Question → Good answer</li>
+        <li>Question → Good answer</li>
+        <li>(50,000 times!)</li>
+    </ul>
+
+    <p><strong>Time:</strong> 5 days</p>
+    <p><strong>Result:</strong> Robot can now answer questions properly!</p>
+
+    <h4>Test:</h4>
+    <ul>
+        <li>You: "Tell me about diabetes"</li>
+        <li>Robot: "Diabetes is when your body can't control sugar well. You should see a doctor!"</li>
+        <li>(Much better!)</li>
+    </ul>
+
+    <hr>
+
+    <h2>Step 3: Learning from Stars (Reinforcement Learning)</h2>
+
+    <p>Now we teach the robot which answers are <strong>BEST</strong> using a star system! ⭐</p>
+
+    <h4>The game:</h4>
+    <ol>
+        <li>Ask robot same question 4 times → Get 4 different answers</li>
+        <li>People give stars:
+            <ul>
+                <li>Answer A: ⭐⭐⭐⭐⭐ (Perfect! Safe and helpful)</li>
+                <li>Answer B: ⭐⭐⭐ (Good but could be better)</li>
+                <li>Answer C: ⭐⭐ (Not great)</li>
+                <li>Answer D: ⭐ (Bad - could be dangerous!)</li>
+            </ul>
+        </li>
+        <li>Robot learns: "Ohhh, people like answers like A! I should do more of that!"</li>
+    </ol>
+
+    <p><strong>Time:</strong> 5 days</p>
+    <p><strong>Result:</strong> Robot gives the BEST, SAFEST answers!</p>
+
+    <hr>
+
+    <h2>Final Result: MedicalGPT is Ready! 🎉</h2>
+
+    <p><strong>You:</strong> "Is chocolate bad for me?"</p>
+
+    <h4>Before all training:</h4>
+    <p>Robot: "Is chocolate bad for me? Is candy bad for you? Sugar is sweet..." (nonsense!)</p>
+
+    <h4>After Pre-training:</h4>
+    <p>Robot: "Is chocolate bad for me? Many foods contain sugar. Nutrition is important..." (better, but doesn't answer!)</p>
+
+    <h4>After SFT:</h4>
+    <p>Robot: "Chocolate in moderation is okay, but too much sugar isn't healthy." (good answer!)</p>
+
+    <h4>After RL:</h4>
+    <p>Robot: "Dark chocolate in moderation (1-2 ounces daily) can be part of a healthy diet. Milk chocolate has more sugar, so limit it. If you have specific dietary concerns, consult your doctor!" (PERFECT - helpful, accurate, and safe!)</p>
+
+    <hr>
+
+    <p><strong>That's exactly how ChatGPT, Claude, and all AI assistants are made!</strong> 🚀</p>
+
+    <p>They:</p>
+    <ol>
+        <li>Read tons of stuff (Pre-training)</li>
+        <li>Learn to be helpful (SFT)</li>
+        <li>Get feedback to be REALLY good (RL)</li>
+    </ol>
+
+    <p>And that's why they can help you with homework, write stories, answer questions, and more! Cool, right? 😎</p>
+</div>
+
+<hr>
+
+<div class="section-header">
+    <h1>Key Takeaways</h1>
+</div>
+
+<div class="key-point">
+    <ol>
+        <li><strong>Pre-training</strong> teaches language understanding (expensive, slow)</li>
+        <li><strong>Post-training</strong> teaches instruction following (cheaper, faster)</li>
+        <li><strong>Transformers</strong> enable parallelization and long-range understanding</li>
+        <li><strong>RLHF</strong> aligns models with human preferences</li>
+        <li><strong>Scale matters</strong> - bigger models generally perform better</li>
+    </ol>
+</div>
+
+<hr>
+
+<p style="text-align: center; margin-top: 40px; color: #666;">
+    <em>Document created: 2025</em><br>
+    <em>This is how ChatGPT, Claude, and all modern LLMs are built!</em>
+</p>
+
+</body>
+</html>
