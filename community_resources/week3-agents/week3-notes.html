@@ -1,0 +1,2134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 3: Agents - Complete Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(to bottom, #f0f4f8, #ffffff);
+            color: #333;
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+            font-size: 2.5em;
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: #2980b9;
+            margin-top: 40px;
+            font-size: 2em;
+            border-left: 6px solid #3498db;
+            padding-left: 15px;
+        }
+
+        h3 {
+            color: #16a085;
+            margin-top: 30px;
+            font-size: 1.5em;
+        }
+
+        h4 {
+            color: #27ae60;
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        .eli5-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-left: 6px solid #ffd700;
+        }
+
+        .eli5-box h3, .eli5-box h4 {
+            color: #ffd700;
+            margin-top: 15px;
+        }
+
+        .eli5-box strong {
+            color: #fff;
+        }
+
+        .overview-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            border: 2px solid #4caf50;
+        }
+
+        .code-block code {
+            color: #ffffff;
+        }
+
+        .example-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background: #e3f2fd;
+        }
+
+        .problem-box {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .solution-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .key-point {
+            background: #fff9c4;
+            border-left: 5px solid #fbc02d;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .workflow-diagram {
+            background: #f5f5f5;
+            border: 2px solid #9e9e9e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        strong {
+            color: #2c3e50;
+        }
+
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .agent-card {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Week 3: Agents - Design and Operation</h1>
+
+    <div class="overview-box">
+        <h3>Course Context</h3>
+        <p><strong>Course:</strong> Become an AI Engineer</p>
+        <p><strong>Week 3 Focus:</strong> Understanding and Building AI Agents</p>
+        <p><strong>Main Topics:</strong></p>
+        <ul>
+            <li>Agents vs. Agentic Systems vs. LLMs - Understanding levels of agency</li>
+            <li>Workflow techniques: Prompt chaining, routing, parallelization, reflection, orchestration</li>
+            <li>Tool integration and the Model Context Protocol (MCP)</li>
+            <li>Multi-step reasoning frameworks (ReACT, Reflexion, ReWOO, tree search)</li>
+            <li>Multi-agent systems and their challenges</li>
+            <li>Agent evaluation strategies</li>
+        </ul>
+    </div>
+
+    <h2>1. Introduction: What are Agents?</h2>
+
+    <div class="eli5-box">
+        <h3>🤖 ELI5: What is an Agent?</h3>
+        <p>Imagine you have a robot assistant. You tell it "I want to throw a birthday party!"</p>
+        <p>A simple chatbot would just say: "That sounds fun! Here are some party ideas..."</p>
+        <p>But an AGENT would actually:</p>
+        <ol>
+            <li>Make a list of what you need (cake, decorations, invitations)</li>
+            <li>Check your calendar to find a good date</li>
+            <li>Search online for local bakeries</li>
+            <li>Send invitations to your friends</li>
+            <li>Order the cake</li>
+            <li>Tell you when everything is ready!</li>
+        </ol>
+        <p>An agent doesn't just talk - it TAKES ACTION to accomplish goals!</p>
+    </div>
+
+    <h3>Defining Agents, Agentic Systems, and LLMs</h3>
+
+    <table class="comparison-table">
+        <tr>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Key Characteristics</th>
+            <th>Example</th>
+        </tr>
+        <tr>
+            <td><strong>LLM (Language Model)</strong></td>
+            <td>Base model that processes text</td>
+            <td>
+                • Input → Output<br>
+                • No planning<br>
+                • No tool use<br>
+                • Single step
+            </td>
+            <td>ChatGPT answering "What is Python?"</td>
+        </tr>
+        <tr>
+            <td><strong>Agentic System</strong></td>
+            <td>System with some autonomous behavior</td>
+            <td>
+                • Some planning<br>
+                • Limited tool use<br>
+                • Simple workflows<br>
+                • Pre-defined paths
+            </td>
+            <td>Customer service bot that searches FAQ database</td>
+        </tr>
+        <tr>
+            <td><strong>Agent</strong></td>
+            <td>Fully autonomous system with decision-making</td>
+            <td>
+                • Complex planning<br>
+                • Multi-step reasoning<br>
+                • Tool integration<br>
+                • Self-correction<br>
+                • Goal-oriented
+            </td>
+            <td>AI assistant that books flights, checks weather, makes reservations</td>
+        </tr>
+    </table>
+
+    <h3>Levels of Agency</h3>
+
+    <div class="overview-box">
+        <p>Agency exists on a spectrum from simple to complex:</p>
+
+        <h4>Level 0: No Agency</h4>
+        <p><strong>Basic LLM:</strong> Just responds to prompts, no actions</p>
+        <p><em>Example:</em> "Tell me about Paris" → Generates text about Paris</p>
+
+        <h4>Level 1: Single-Action Agency</h4>
+        <p><strong>Tool-augmented LLM:</strong> Can call one tool per request</p>
+        <p><em>Example:</em> "What's the weather?" → Calls weather API → Returns result</p>
+
+        <h4>Level 2: Chain Agency</h4>
+        <p><strong>Sequential workflows:</strong> Multiple steps in pre-defined order</p>
+        <p><em>Example:</em> User query → Retrieve docs → Generate answer (RAG pipeline)</p>
+
+        <h4>Level 3: Conditional Agency</h4>
+        <p><strong>Dynamic routing:</strong> Decides which path to take</p>
+        <p><em>Example:</em> Classifies question type → Routes to appropriate handler</p>
+
+        <h4>Level 4: Iterative Agency</h4>
+        <p><strong>Multi-step reasoning:</strong> Plans and executes multiple actions with feedback</p>
+        <p><em>Example:</em> Plans research → Executes steps → Reflects on results → Adjusts plan</p>
+
+        <h4>Level 5: Full Autonomy</h4>
+        <p><strong>Complete autonomous agents:</strong> Self-directed goal achievement</p>
+        <p><em>Example:</em> "Plan my vacation" → Books flights, hotels, creates itinerary, handles changes</p>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Key Insight:</strong> Most real-world systems fall between Levels 2-4. Full autonomy (Level 5) is still an active research area with significant challenges around reliability, safety, and control.</p>
+    </div>
+
+    <h2>2. Agent Workflows and Patterns</h2>
+
+    <div class="eli5-box">
+        <h3>🎭 ELI5: Workflow Patterns</h3>
+        <p>Think about different ways to organize a group project at school:</p>
+        <ul>
+            <li><strong>Assembly line:</strong> One person does their part, then passes to the next (Chain)</li>
+            <li><strong>Team split:</strong> Everyone works on different parts at the same time (Parallel)</li>
+            <li><strong>Manager + workers:</strong> One person assigns tasks to others (Orchestrator)</li>
+            <li><strong>Review and redo:</strong> Submit work, get feedback, improve it (Reflection)</li>
+        </ul>
+        <p>Agent workflows use these same patterns!</p>
+    </div>
+
+    <h3>1. Prompt Chaining</h3>
+
+    <div class="overview-box">
+        <p><strong>Concept:</strong> Break complex task into sequential steps, where each step's output feeds into the next</p>
+        <p><strong>When to use:</strong> Multi-step processes with clear, linear dependencies</p>
+    </div>
+
+    <div class="workflow-diagram">
+        <p><strong>Prompt Chaining Flow:</strong></p>
+        <p>Input → Prompt 1 (LLM) → Output 1</p>
+        <p>↓</p>
+        <p>Output 1 → Prompt 2 (LLM) → Output 2</p>
+        <p>↓</p>
+        <p>Output 2 → Prompt 3 (LLM) → Final Output</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Blog Post Generator with Prompt Chaining</h4>
+
+        <p><strong>Step 1: Generate outline</strong></p>
+        <div class="code-block">
+            <code>
+Prompt: "Create an outline for a blog post about sustainable gardening"
+
+Output:
+1. Introduction to sustainable gardening
+2. Water conservation techniques
+3. Composting basics
+4. Native plant selection
+5. Conclusion
+            </code>
+        </div>
+
+        <p><strong>Step 2: Expand each section (using Step 1 output)</strong></p>
+        <div class="code-block">
+            <code>
+Prompt: "Write 2 paragraphs about: Water conservation techniques
+Context: This is section 2 of a blog post with this outline: [outline from Step 1]"
+
+Output: [Detailed paragraphs about water conservation]
+            </code>
+        </div>
+
+        <p><strong>Step 3: Combine and polish (using outputs from Steps 1-2)</strong></p>
+        <div class="code-block">
+            <code>
+Prompt: "Combine these sections into a cohesive blog post and add transitions:
+[All sections]"
+
+Output: [Final polished blog post]
+            </code>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Advantages of Prompt Chaining:</strong></p>
+        <ul>
+            <li>Breaks complex tasks into manageable steps</li>
+            <li>Each step can be optimized independently</li>
+            <li>Easier to debug (identify which step failed)</li>
+            <li>More reliable than single mega-prompt</li>
+        </ul>
+        <p><strong>Disadvantages:</strong></p>
+        <ul>
+            <li>Higher latency (multiple LLM calls)</li>
+            <li>Higher cost (more API calls)</li>
+            <li>Errors can propagate through chain</li>
+        </ul>
+    </div>
+
+    <h3>2. Routing</h3>
+
+    <div class="overview-box">
+        <p><strong>Concept:</strong> Classify input and route to appropriate specialized handler</p>
+        <p><strong>When to use:</strong> When different inputs require different processing logic</p>
+    </div>
+
+    <div class="workflow-diagram">
+        <p><strong>Routing Flow:</strong></p>
+        <p>User Input → Router (Classifier)</p>
+        <p>↓ ↓ ↓</p>
+        <p>Path A | Path B | Path C</p>
+        <p>↓ ↓ ↓</p>
+        <p>Specialized Handlers</p>
+        <p>↓ ↓ ↓</p>
+        <p>→ Final Response ←</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Customer Service Router</h4>
+
+        <p><strong>Router Prompt:</strong></p>
+        <div class="code-block">
+            <code>
+Classify the following customer query into ONE category:
+- billing: Questions about payments, invoices, refunds
+- technical: Technical issues, bugs, how-to questions
+- general: General inquiries, feedback, other
+
+Query: "My credit card was charged twice!"
+
+Classification: billing
+            </code>
+        </div>
+
+        <p><strong>Then route to specialized handler:</strong></p>
+        <div class="code-block">
+            <code>
+# Router logic (pseudocode)
+classification = llm.classify(query)
+
+if classification == "billing":
+    response = billing_agent.handle(query)
+elif classification == "technical":
+    response = technical_agent.handle(query)
+else:
+    response = general_agent.handle(query)
+
+return response
+            </code>
+        </div>
+
+        <p><strong>Each handler is specialized:</strong></p>
+        <ul>
+            <li><strong>Billing agent:</strong> Has access to payment database, refund policies</li>
+            <li><strong>Technical agent:</strong> Has access to documentation, bug tracking</li>
+            <li><strong>General agent:</strong> Handles everything else</li>
+        </ul>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Benefits of Routing:</strong></p>
+        <ul>
+            <li>Each handler can be optimized for its domain</li>
+            <li>Better accuracy than one-size-fits-all approach</li>
+            <li>Easier to maintain and update specific paths</li>
+            <li>Can use different models for different paths (cost optimization)</li>
+        </ul>
+    </div>
+
+    <h3>3. Parallelization</h3>
+
+    <div class="overview-box">
+        <p><strong>Concept:</strong> Execute multiple independent operations simultaneously</p>
+        <p><strong>When to use:</strong> When tasks don't depend on each other</p>
+    </div>
+
+    <div class="workflow-diagram">
+        <p><strong>Parallel Execution Flow:</strong></p>
+        <p>User Query</p>
+        <p>↓</p>
+        <p>Spawn Multiple Tasks (Parallel)</p>
+        <p>Task 1 | Task 2 | Task 3 | Task 4</p>
+        <p>↓ ↓ ↓ ↓</p>
+        <p>Result 1 | Result 2 | Result 3 | Result 4</p>
+        <p>↓</p>
+        <p>Combine/Aggregate Results → Final Output</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Research Agent with Parallelization</h4>
+
+        <p><strong>Task:</strong> Research "Impact of AI on healthcare"</p>
+
+        <p><strong>Parallel searches:</strong></p>
+        <div class="code-block">
+            <code>
+# All these run at the SAME TIME (parallel)
+task1 = search_academic_papers("AI healthcare")
+task2 = search_news("AI medical technology 2024")
+task3 = search_company_reports("AI healthcare startups")
+task4 = search_government_data("healthcare AI regulations")
+
+# Wait for all to complete
+results = await Promise.all([task1, task2, task3, task4])
+
+# Combine findings
+final_report = llm.synthesize(results)
+            </code>
+        </div>
+
+        <p><strong>Time savings:</strong></p>
+        <ul>
+            <li><strong>Sequential:</strong> 4 searches × 3 seconds = 12 seconds</li>
+            <li><strong>Parallel:</strong> max(3, 3, 3, 3) = 3 seconds!</li>
+        </ul>
+    </div>
+
+    <div class="key-point">
+        <p><strong>When to Parallelize:</strong></p>
+        <ul>
+            <li>Multiple data sources to query</li>
+            <li>Independent analysis tasks</li>
+            <li>Batch processing</li>
+            <li>A/B testing different approaches</li>
+        </ul>
+        <p><strong>Important:</strong> Only parallelize truly independent tasks. If Task B needs Task A's output, they MUST run sequentially!</p>
+    </div>
+
+    <h3>4. Reflection</h3>
+
+    <div class="overview-box">
+        <p><strong>Concept:</strong> Agent reviews its own output, identifies issues, and improves</p>
+        <p><strong>When to use:</strong> Tasks requiring high quality, iterative refinement</p>
+    </div>
+
+    <div class="eli5-box">
+        <h4>🪞 ELI5: Reflection</h4>
+        <p>Imagine writing an essay for school:</p>
+        <ol>
+            <li>You write the first draft</li>
+            <li>You read it again and think "Hmm, this paragraph is confusing"</li>
+            <li>You rewrite that part</li>
+            <li>You check again - now it's better!</li>
+        </ol>
+        <p>Reflection is when the agent is both the writer AND the editor!</p>
+    </div>
+
+    <div class="workflow-diagram">
+        <p><strong>Reflection Flow:</strong></p>
+        <p>Task → Generator Agent → Initial Output</p>
+        <p>↓</p>
+        <p>Critic Agent: "Here are the problems..."</p>
+        <p>↓</p>
+        <p>Generator Agent: Revises based on feedback</p>
+        <p>↓</p>
+        <p>Improved Output</p>
+        <p>↓</p>
+        <p>Critic Agent: "Good enough!" OR "Still needs work..."</p>
+        <p>↓</p>
+        <p>[Repeat if needed] → Final Output</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Code Generation with Reflection</h4>
+
+        <p><strong>Initial Generation:</strong></p>
+        <div class="code-block">
+            <code>
+Prompt: "Write a Python function to check if a string is a palindrome"
+
+def is_palindrome(s):
+    return s == s[::-1]
+            </code>
+        </div>
+
+        <p><strong>Reflection/Critique:</strong></p>
+        <div class="code-block">
+            <code>
+Critic Prompt: "Review this code for issues:
+[code above]"
+
+Critic Response:
+"Issues found:
+1. Doesn't handle spaces (e.g., 'race car' should be palindrome)
+2. Case-sensitive ('Racecar' returns False)
+3. No handling of punctuation
+4. Missing docstring
+5. No input validation"
+            </code>
+        </div>
+
+        <p><strong>Revision:</strong></p>
+        <div class="code-block">
+            <code>
+Prompt: "Improve the code based on this feedback:
+[original code]
+[critique]"
+
+Improved Code:
+def is_palindrome(s):
+    """
+    Check if a string is a palindrome, ignoring spaces,
+    punctuation, and case.
+
+    Args:
+        s (str): String to check
+
+    Returns:
+        bool: True if palindrome, False otherwise
+    """
+    if not isinstance(s, str):
+        raise TypeError("Input must be a string")
+
+    # Clean: remove non-alphanumeric, convert to lowercase
+    cleaned = ''.join(c.lower() for c in s if c.isalnum())
+    return cleaned == cleaned[::-1]
+            </code>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Reflection Patterns:</strong></p>
+        <ul>
+            <li><strong>Self-Reflection:</strong> Same model acts as both generator and critic</li>
+            <li><strong>Two-Model Reflection:</strong> Separate models for generation and critique</li>
+            <li><strong>Multi-Round:</strong> Iterate multiple times until quality threshold met</li>
+            <li><strong>Human-in-the-Loop:</strong> Human provides the critique</li>
+        </ul>
+    </div>
+
+    <h3>5. Orchestrator-Worker Pattern</h3>
+
+    <div class="overview-box">
+        <p><strong>Concept:</strong> Central orchestrator delegates tasks to specialized worker agents</p>
+        <p><strong>When to use:</strong> Complex workflows requiring coordination of multiple capabilities</p>
+    </div>
+
+    <div class="eli5-box">
+        <h4>👔 ELI5: Orchestrator-Worker</h4>
+        <p>Think of a movie director (orchestrator) and the film crew (workers):</p>
+        <ul>
+            <li>The director doesn't do everything themselves</li>
+            <li>They tell the camera person "Get a close-up shot here"</li>
+            <li>They tell the sound person "Record the dialogue"</li>
+            <li>They tell the lighting person "Make it darker"</li>
+            <li>The director coordinates everyone to make the movie!</li>
+        </ul>
+    </div>
+
+    <div class="workflow-diagram">
+        <p><strong>Orchestrator-Worker Architecture:</strong></p>
+        <p>User Request</p>
+        <p>↓</p>
+        <p><strong>ORCHESTRATOR AGENT</strong></p>
+        <p>(Plans, Delegates, Coordinates)</p>
+        <p>↓ ↓ ↓ ↓</p>
+        <p>Worker 1 | Worker 2 | Worker 3 | Worker 4</p>
+        <p>(Search) | (Analyze) | (Generate) | (Validate)</p>
+        <p>↓ ↓ ↓ ↓</p>
+        <p>Results collected by Orchestrator</p>
+        <p>↓</p>
+        <p>Final Response</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Travel Planning Orchestrator</h4>
+
+        <p><strong>User Request:</strong> "Plan a 3-day trip to Tokyo"</p>
+
+        <p><strong>Orchestrator thinks:</strong></p>
+        <div class="code-block">
+            <code>
+Orchestrator Planning:
+"To complete this task, I need to:
+1. Search for flights (delegate to FlightWorker)
+2. Find hotels (delegate to HotelWorker)
+3. Create itinerary (delegate to ItineraryWorker)
+4. Check weather forecast (delegate to WeatherWorker)
+5. Calculate budget (delegate to BudgetWorker)
+6. Compile everything into final plan (I'll do this)"
+            </code>
+        </div>
+
+        <p><strong>Orchestrator delegates:</strong></p>
+        <div class="code-block">
+            <code>
+# Orchestrator code (pseudocode)
+flights = FlightWorker.search(
+    destination="Tokyo",
+    duration=3
+)
+
+hotels = HotelWorker.search(
+    location="Tokyo",
+    checkin=flights.arrival_date,
+    checkout=flights.departure_date
+)
+
+weather = WeatherWorker.forecast(
+    location="Tokyo",
+    dates=flights.dates
+)
+
+itinerary = ItineraryWorker.create(
+    destination="Tokyo",
+    duration=3,
+    interests=user_preferences
+)
+
+budget = BudgetWorker.calculate(
+    flights=flights,
+    hotels=hotels,
+    itinerary=itinerary
+)
+
+# Orchestrator compiles final plan
+final_plan = orchestrator.compile(
+    flights, hotels, weather, itinerary, budget
+)
+            </code>
+        </div>
+
+        <p><strong>Workers are specialized:</strong></p>
+        <ul>
+            <li><strong>FlightWorker:</strong> Knows airline APIs, fare comparison</li>
+            <li><strong>HotelWorker:</strong> Knows booking sites, reviews</li>
+            <li><strong>ItineraryWorker:</strong> Knows attractions, timing, logistics</li>
+            <li><strong>WeatherWorker:</strong> Knows weather APIs</li>
+            <li><strong>BudgetWorker:</strong> Does calculations, currency conversion</li>
+        </ul>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Benefits of Orchestrator-Worker:</strong></p>
+        <ul>
+            <li>Separation of concerns (each worker has one job)</li>
+            <li>Workers can be independently developed and tested</li>
+            <li>Easy to add new capabilities (just add a new worker)</li>
+            <li>Orchestrator handles complexity of coordination</li>
+        </ul>
+        <p><strong>Challenges:</strong></p>
+        <ul>
+            <li>Orchestrator must be sophisticated (planning, error handling)</li>
+            <li>Communication overhead between orchestrator and workers</li>
+            <li>Debugging can be complex</li>
+        </ul>
+    </div>
+
+    <h2>3. Tool Use and Integration</h2>
+
+    <div class="eli5-box">
+        <h3>🔧 ELI5: What are Tools?</h3>
+        <p>Imagine you're building something, and you have a toolbox:</p>
+        <ul>
+            <li>Hammer for nails</li>
+            <li>Screwdriver for screws</li>
+            <li>Saw for cutting</li>
+        </ul>
+        <p>For AI agents, "tools" are special abilities they can use:</p>
+        <ul>
+            <li>Calculator tool for math</li>
+            <li>Search tool for finding information</li>
+            <li>Database tool for looking up data</li>
+            <li>Weather API tool for checking weather</li>
+        </ul>
+        <p>The LLM decides WHICH tool to use and WHEN to use it!</p>
+    </div>
+
+    <h3>What is Tool Calling?</h3>
+
+    <div class="overview-box">
+        <p><strong>Tool Calling (Function Calling):</strong> Ability for an LLM to invoke external functions/APIs</p>
+
+        <p><strong>How it works:</strong></p>
+        <ol>
+            <li>Define available tools with descriptions</li>
+            <li>LLM receives user query + tool descriptions</li>
+            <li>LLM decides if it needs a tool and which one</li>
+            <li>LLM generates a "tool call" (function name + parameters)</li>
+            <li>System executes the tool</li>
+            <li>Tool result is fed back to LLM</li>
+            <li>LLM generates final response using the tool result</li>
+        </ol>
+    </div>
+
+    <div class="workflow-diagram">
+        <p><strong>Tool Calling Flow:</strong></p>
+        <p>User: "What's the weather in Tokyo?"</p>
+        <p>↓</p>
+        <p>LLM: "I need to use get_weather tool"</p>
+        <p>↓</p>
+        <p>Tool Call: get_weather(location="Tokyo")</p>
+        <p>↓</p>
+        <p>System executes → Result: "22°C, Sunny"</p>
+        <p>↓</p>
+        <p>LLM: "The weather in Tokyo is 22°C and sunny."</p>
+    </div>
+
+    <h3>Tool Definition and Formatting</h3>
+
+    <div class="example-box">
+        <h4>Example: Defining Tools for an Agent</h4>
+
+        <p><strong>Tool 1: Calculator</strong></p>
+        <div class="code-block">
+            <code>
+{
+    "name": "calculator",
+    "description": "Performs basic arithmetic operations",
+    "parameters": {
+        "operation": {
+            "type": "string",
+            "enum": ["add", "subtract", "multiply", "divide"],
+            "description": "The arithmetic operation to perform"
+        },
+        "a": {
+            "type": "number",
+            "description": "First operand"
+        },
+        "b": {
+            "type": "number",
+            "description": "Second operand"
+        }
+    }
+}
+            </code>
+        </div>
+
+        <p><strong>Tool 2: Web Search</strong></p>
+        <div class="code-block">
+            <code>
+{
+    "name": "web_search",
+    "description": "Searches the web for information",
+    "parameters": {
+        "query": {
+            "type": "string",
+            "description": "Search query"
+        },
+        "num_results": {
+            "type": "integer",
+            "description": "Number of results to return (default: 5)",
+            "default": 5
+        }
+    }
+}
+            </code>
+        </div>
+
+        <p><strong>Tool 3: Database Query</strong></p>
+        <div class="code-block">
+            <code>
+{
+    "name": "query_database",
+    "description": "Queries customer database for information",
+    "parameters": {
+        "customer_id": {
+            "type": "string",
+            "description": "Customer ID to lookup"
+        },
+        "fields": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "List of fields to retrieve"
+        }
+    }
+}
+            </code>
+        </div>
+    </div>
+
+    <h3>Tool Execution Flow</h3>
+
+    <div class="example-box">
+        <h4>Complete Tool Calling Example</h4>
+
+        <p><strong>Scenario:</strong> User asks "What's 15% tip on a $80 meal?"</p>
+
+        <p><strong>Step 1: LLM receives query + tool definitions</strong></p>
+        <div class="code-block">
+            <code>
+System: You have access to these tools: [calculator, web_search, database]
+User: What's 15% tip on a $80 meal?
+
+LLM Reasoning: "I need to calculate 80 * 0.15. I'll use the calculator tool."
+            </code>
+        </div>
+
+        <p><strong>Step 2: LLM generates tool call</strong></p>
+        <div class="code-block">
+            <code>
+Tool Call:
+{
+    "name": "calculator",
+    "parameters": {
+        "operation": "multiply",
+        "a": 80,
+        "b": 0.15
+    }
+}
+            </code>
+        </div>
+
+        <p><strong>Step 3: System executes tool</strong></p>
+        <div class="code-block">
+            <code>
+# Python execution
+def calculator(operation, a, b):
+    if operation == "multiply":
+        return a * b
+    # ... other operations
+
+result = calculator("multiply", 80, 0.15)
+# result = 12.0
+            </code>
+        </div>
+
+        <p><strong>Step 4: Result fed back to LLM</strong></p>
+        <div class="code-block">
+            <code>
+Tool Result: 12.0
+
+LLM: "A 15% tip on an $80 meal is $12.00."
+            </code>
+        </div>
+    </div>
+
+    <h3>Model Context Protocol (MCP)</h3>
+
+    <div class="overview-box">
+        <p><strong>Problem:</strong> Every agent framework uses different formats for tools</p>
+        <ul>
+            <li>OpenAI has their function calling format</li>
+            <li>Anthropic has their tool use format</li>
+            <li>LangChain has their own format</li>
+            <li>Hard to share tools between systems!</li>
+        </ul>
+
+        <p><strong>Solution: Model Context Protocol (MCP)</strong></p>
+        <p>MCP is a standardized protocol for connecting LLMs with external tools and data sources</p>
+    </div>
+
+    <div class="eli5-box">
+        <h4>🔌 ELI5: Model Context Protocol</h4>
+        <p>Imagine everyone had different types of electrical outlets:</p>
+        <ul>
+            <li>Alice's house uses triangle plugs</li>
+            <li>Bob's house uses square plugs</li>
+            <li>Carol's house uses circle plugs</li>
+        </ul>
+        <p>You'd need different adapters for each house! Very annoying!</p>
+        <p>MCP is like saying "Everyone use the SAME standard plug shape!" Now any device works in any house.</p>
+        <p>MCP means any tool can work with any AI agent!</p>
+    </div>
+
+    <div class="solution-box">
+        <h4>MCP Benefits</h4>
+        <ul>
+            <li><strong>Standardization:</strong> One format for all tools</li>
+            <li><strong>Interoperability:</strong> Tools work across different AI systems</li>
+            <li><strong>Reusability:</strong> Write a tool once, use everywhere</li>
+            <li><strong>Ecosystem:</strong> Community can share tools easily</li>
+            <li><strong>Security:</strong> Standard security and permission model</li>
+        </ul>
+
+        <h4>MCP Architecture</h4>
+        <ul>
+            <li><strong>MCP Hosts:</strong> Applications that want to use tools (AI agents, IDEs)</li>
+            <li><strong>MCP Clients:</strong> Protocol clients within hosts</li>
+            <li><strong>MCP Servers:</strong> Services that expose tools/resources</li>
+            <li><strong>Tools:</strong> Individual functions/capabilities</li>
+        </ul>
+    </div>
+
+    <div class="example-box">
+        <h4>MCP in Practice</h4>
+
+        <p><strong>MCP Server (Tool Provider):</strong></p>
+        <div class="code-block">
+            <code>
+# MCP Server exposes tools in standard format
+from mcp import Server
+
+server = Server("my-tools")
+
+@server.tool()
+def get_weather(location: str) -> dict:
+    """Get current weather for a location"""
+    # Implementation
+    return {"temp": 22, "condition": "sunny"}
+
+@server.tool()
+def search_web(query: str, num_results: int = 5) -> list:
+    """Search the web"""
+    # Implementation
+    return [...]
+
+server.run()
+            </code>
+        </div>
+
+        <p><strong>MCP Client (AI Agent):</strong></p>
+        <div class="code-block">
+            <code>
+# Any AI agent can connect to MCP server
+from mcp import Client
+
+client = Client()
+client.connect("mcp://localhost:8000")
+
+# Discover available tools
+tools = client.list_tools()
+# Returns: [get_weather, search_web, ...]
+
+# LLM decides to call get_weather
+result = client.call_tool(
+    "get_weather",
+    {"location": "Tokyo"}
+)
+# Returns: {"temp": 22, "condition": "sunny"}
+            </code>
+        </div>
+
+        <p><strong>Result:</strong> The same tools work with GPT-4, Claude, LLaMA, or any other LLM that supports MCP!</p>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Tool Use Best Practices:</strong></p>
+        <ul>
+            <li>Write clear, detailed tool descriptions (helps LLM choose correctly)</li>
+            <li>Include example usage in descriptions</li>
+            <li>Use type hints and validation for parameters</li>
+            <li>Handle errors gracefully</li>
+            <li>Log tool calls for debugging</li>
+            <li>Consider security (what tools should agent have access to?)</li>
+            <li>Use MCP for standardization when possible</li>
+        </ul>
+    </div>
+
+    <h2>4. Multi-Step Reasoning Frameworks</h2>
+
+    <div class="eli5-box">
+        <h3>🧠 ELI5: Multi-Step Reasoning</h3>
+        <p>Imagine you're solving a mystery (like a detective!):</p>
+        <ol>
+            <li>You find a clue (footprint)</li>
+            <li>You THINK about what it means</li>
+            <li>You decide to check the garden</li>
+            <li>You find another clue (muddy shovel)</li>
+            <li>You THINK about what this means</li>
+            <li>You decide to ask the gardener questions</li>
+            <li>Finally you solve the mystery!</li>
+        </ol>
+        <p>Multi-step reasoning is when the agent goes through many steps of ACTION → THINK → ACTION → THINK until it solves the problem!</p>
+    </div>
+
+    <h3>1. ReACT Framework (Reason + Act)</h3>
+
+    <div class="overview-box">
+        <p><strong>Paper:</strong> "ReAct: Synergizing Reasoning and Acting in Language Models" (Google, 2023)</p>
+        <p><strong>Key Idea:</strong> Alternate between reasoning (thinking) and acting (using tools)</p>
+        <p><strong>Format:</strong> Thought → Action → Observation → Thought → Action → ... → Answer</p>
+    </div>
+
+    <div class="workflow-diagram">
+        <p><strong>ReACT Loop:</strong></p>
+        <p>Question</p>
+        <p>↓</p>
+        <p><strong>Thought:</strong> "What do I need to do?"</p>
+        <p>↓</p>
+        <p><strong>Action:</strong> Use tool / search / calculate</p>
+        <p>↓</p>
+        <p><strong>Observation:</strong> Result from action</p>
+        <p>↓</p>
+        <p><strong>Thought:</strong> "What does this mean? What next?"</p>
+        <p>↓</p>
+        <p>[Repeat until solved]</p>
+        <p>↓</p>
+        <p><strong>Answer:</strong> Final response</p>
+    </div>
+
+    <div class="example-box">
+        <h4>ReACT Example: Research Question</h4>
+
+        <p><strong>Question:</strong> "Who won the Nobel Prize in Physics in the year Albert Einstein was born?"</p>
+
+        <div class="code-block">
+            <code>
+Thought 1: I need to find out when Albert Einstein was born.
+
+Action 1: Search("When was Albert Einstein born")
+
+Observation 1: Albert Einstein was born on March 14, 1879.
+
+Thought 2: Now I need to find out who won the Nobel Prize in Physics in 1879.
+
+Action 2: Search("Nobel Prize Physics 1879")
+
+Observation 2: The Nobel Prize was first awarded in 1901, not 1879.
+
+Thought 3: Since the Nobel Prize didn't exist in 1879, the question cannot be answered as stated.
+
+Answer: No one won the Nobel Prize in Physics in 1879 because the Nobel Prize was not established until 1901. Albert Einstein was born in 1879.
+            </code>
+        </div>
+
+        <p><strong>Key insight:</strong> The agent had to take MULTIPLE actions, and each thought informed the next action!</p>
+    </div>
+
+    <div class="key-point">
+        <p><strong>ReACT Advantages:</strong></p>
+        <ul>
+            <li>Transparent reasoning (you can see the thinking process)</li>
+            <li>Flexible - can adapt plan based on observations</li>
+            <li>Combines LLM's reasoning with tool capabilities</li>
+            <li>Works well for information-seeking tasks</li>
+        </ul>
+        <p><strong>Limitations:</strong></p>
+        <ul>
+            <li>Can get stuck in loops</li>
+            <li>No backtracking (can't undo actions)</li>
+            <li>May take suboptimal paths</li>
+        </ul>
+    </div>
+
+    <h3>2. Reflexion Framework</h3>
+
+    <div class="overview-box">
+        <p><strong>Paper:</strong> "Reflexion: Language Agents with Verbal Reinforcement Learning" (Northeastern, 2023)</p>
+        <p><strong>Key Idea:</strong> Agent learns from mistakes by reflecting on failures</p>
+        <p><strong>Added capability:</strong> Self-reflection and memory of past attempts</p>
+    </div>
+
+    <div class="eli5-box">
+        <h4>🔄 ELI5: Reflexion</h4>
+        <p>Imagine you're trying to beat a video game level:</p>
+        <ol>
+            <li>First try: You fall in a pit. You die.</li>
+            <li>You think: "Okay, I need to avoid that pit"</li>
+            <li>Second try: You avoid the pit but get hit by an enemy</li>
+            <li>You think: "Avoid pit AND watch for enemies"</li>
+            <li>Third try: Using what you learned, you beat the level!</li>
+        </ol>
+        <p>Reflexion is learning from your mistakes and trying again!</p>
+    </div>
+
+    <div class="workflow-diagram">
+        <p><strong>Reflexion Loop:</strong></p>
+        <p>Task</p>
+        <p>↓</p>
+        <p><strong>Act:</strong> Try to solve (using ReACT or other method)</p>
+        <p>↓</p>
+        <p><strong>Evaluate:</strong> Did it succeed?</p>
+        <p>↓ (if failed)</p>
+        <p><strong>Reflect:</strong> "What went wrong? How to improve?"</p>
+        <p>↓</p>
+        <p><strong>Memory:</strong> Store reflection</p>
+        <p>↓</p>
+        <p><strong>Act Again:</strong> Retry with memory of past attempts</p>
+        <p>↓</p>
+        <p>[Repeat until success or max attempts]</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Reflexion Example: Code Generation</h4>
+
+        <p><strong>Task:</strong> Write a function to find the longest palindrome substring</p>
+
+        <p><strong>Attempt 1:</strong></p>
+        <div class="code-block">
+            <code>
+def longest_palindrome(s):
+    for length in range(len(s), 0, -1):
+        for start in range(len(s) - length + 1):
+            substring = s[start:start+length]
+            if substring == substring[::-1]:
+                return substring
+    return ""
+
+Test: longest_palindrome("babad")
+Result: PASS
+
+Test: longest_palindrome("")
+Result: FAIL (should return "", but code returns "")
+Wait, it passed!
+
+Test: longest_palindrome("cbbd")
+Result: FAIL (expected "bb", got "b")
+            </code>
+        </div>
+
+        <p><strong>Reflection 1:</strong></p>
+        <div class="code-block">
+            <code>
+"The algorithm is checking substrings from longest to shortest,
+which is correct. However, the issue is that I'm returning too early.
+For 'cbbd', I should find 'bb' but I'm returning 'c' or 'b'.
+
+Wait, I see the bug - the algorithm should work correctly. Let me trace:
+- Length 4: 'cbbd' not palindrome
+- Length 3: 'cbb' not palindrome, 'bbd' not palindrome
+- Length 2: 'cb' not palindrome, 'bb' IS palindrome → should return 'bb'
+
+Actually the code looks correct. Let me test again."
+            </code>
+        </div>
+
+        <p><strong>Attempt 2 (after reflection):</strong></p>
+        <div class="code-block">
+            <code>
+# Re-testing reveals the code was actually correct!
+# Tests pass. Reflection helped verify the logic.
+            </code>
+        </div>
+
+        <p><strong>Key Point:</strong> Reflexion isn't just trying again - it's analyzing what went wrong and explicitly using that insight to improve.</p>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Reflexion Components:</strong></p>
+        <ul>
+            <li><strong>Actor:</strong> Takes actions to solve task</li>
+            <li><strong>Evaluator:</strong> Checks if solution is correct</li>
+            <li><strong>Self-Reflection:</strong> Analyzes failures and generates insights</li>
+            <li><strong>Memory:</strong> Stores reflections from past attempts</li>
+        </ul>
+    </div>
+
+    <h3>3. ReWOO Framework (Reasoning WithOut Observation)</h3>
+
+    <div class="overview-box">
+        <p><strong>Paper:</strong> "ReWOO: Decoupling Reasoning from Observations for Efficient Augmented Language Models" (2023)</p>
+        <p><strong>Key Idea:</strong> Plan ALL actions upfront, then execute them in parallel</p>
+        <p><strong>Difference from ReACT:</strong> ReACT plans one step at a time; ReWOO plans everything first</p>
+    </div>
+
+    <div class="workflow-diagram">
+        <p><strong>ReWOO vs ReACT:</strong></p>
+
+        <p><strong>ReACT (Sequential):</strong></p>
+        <p>Think → Act → Observe → Think → Act → Observe → ...</p>
+        <p>Time: Each action waits for previous to complete</p>
+
+        <br>
+
+        <p><strong>ReWOO (Plan then Execute):</strong></p>
+        <p>Phase 1 - Planning: Think about ALL needed actions</p>
+        <p>Phase 2 - Execution: Run actions in PARALLEL</p>
+        <p>Phase 3 - Generation: Use all results to answer</p>
+        <p>Time: Much faster!</p>
+    </div>
+
+    <div class="example-box">
+        <h4>ReWOO Example: Multi-Source Research</h4>
+
+        <p><strong>Question:</strong> "Compare the GDP and population of France and Germany"</p>
+
+        <p><strong>Phase 1: Planning</strong></p>
+        <div class="code-block">
+            <code>
+Planner: "To answer this question, I need to:
+#1 = Search('France GDP')
+#2 = Search('France population')
+#3 = Search('Germany GDP')
+#4 = Search('Germany population')
+#5 = Compare(#1, #2, #3, #4)"
+
+Variables identified:
+- #1: France GDP
+- #2: France population
+- #3: Germany GDP
+- #4: Germany population
+- #5: Final comparison
+            </code>
+        </div>
+
+        <p><strong>Phase 2: Parallel Execution</strong></p>
+        <div class="code-block">
+            <code>
+# All 4 searches run AT THE SAME TIME (parallel)
+results = {
+    '#1': '2.8 trillion USD',
+    '#2': '67 million',
+    '#3': '4.0 trillion USD',
+    '#4': '83 million'
+}
+
+Execution time: ~3 seconds (for all 4)
+vs ReACT: ~12 seconds (sequential)
+            </code>
+        </div>
+
+        <p><strong>Phase 3: Generation</strong></p>
+        <div class="code-block">
+            <code>
+Generator: "Based on the data:
+- France: GDP $2.8T, Population 67M
+- Germany: GDP $4.0T, Population 83M
+
+Germany has both a higher GDP (42% larger) and
+larger population (24% more people) than France."
+            </code>
+        </div>
+    </div>
+
+    <div class="key-point">
+        <p><strong>ReWOO Advantages:</strong></p>
+        <ul>
+            <li>Much faster (parallel execution)</li>
+            <li>More efficient (fewer LLM calls)</li>
+            <li>Complete plan visible upfront</li>
+            <li>Deterministic execution</li>
+        </ul>
+        <p><strong>Limitations:</strong></p>
+        <ul>
+            <li>Cannot adapt plan mid-execution</li>
+            <li>Cannot use result from action A to inform action B</li>
+            <li>Only works for independent actions</li>
+            <li>Planning can be challenging for LLM</li>
+        </ul>
+    </div>
+
+    <h3>4. Tree Search Methods</h3>
+
+    <div class="overview-box">
+        <p><strong>Concept:</strong> Explore multiple possible action paths like a tree, evaluate outcomes, choose best path</p>
+        <p><strong>Inspiration:</strong> Game-playing algorithms (Chess, Go)</p>
+        <p><strong>Use case:</strong> When there are multiple ways to solve a problem</p>
+    </div>
+
+    <div class="eli5-box">
+        <h4>🌳 ELI5: Tree Search</h4>
+        <p>Imagine you're in a maze with multiple paths:</p>
+        <ul>
+            <li>You see 3 doors: Red, Blue, Green</li>
+            <li>Instead of just picking one, you imagine: "What if I go through Red? What would happen?"</li>
+            <li>You think about each path</li>
+            <li>You pick the one that seems best</li>
+        </ul>
+        <p>Tree search tries MULTIPLE possibilities before committing to one!</p>
+    </div>
+
+    <div class="workflow-diagram">
+        <p><strong>Tree Search Visualization:</strong></p>
+        <pre>
+                        Start
+                          |
+            +-------------+-------------+
+            |             |             |
+        Action A      Action B      Action C
+            |             |             |
+        Result A      Result B      Result C
+        (score: 3)    (score: 7)    (score: 4)
+            |
+        [More depth]
+
+Choose path with best score: Action B!
+        </pre>
+    </div>
+
+    <h4>Tree-of-Thoughts (ToT)</h4>
+
+    <div class="overview-box">
+        <p><strong>Paper:</strong> "Tree of Thoughts: Deliberate Problem Solving with Large Language Models" (Princeton, 2023)</p>
+        <p><strong>Process:</strong></p>
+        <ol>
+            <li><strong>Generate multiple next steps</strong> (branching)</li>
+            <li><strong>Evaluate each step</strong> (scoring)</li>
+            <li><strong>Select most promising</strong> (pruning)</li>
+            <li><strong>Expand that branch</strong> (depth)</li>
+            <li><strong>Repeat</strong> until solution found</li>
+        </ol>
+    </div>
+
+    <div class="example-box">
+        <h4>Tree-of-Thoughts Example: Math Problem</h4>
+
+        <p><strong>Problem:</strong> "Use exactly four 4's to make 24"</p>
+
+        <p><strong>ToT Search:</strong></p>
+        <div class="code-block">
+            <code>
+Level 0: Start with four 4's: 4, 4, 4, 4
+
+Level 1 (Generate multiple approaches):
+- Thought A: "Try adding: 4 + 4 + 4 + 4 = 16" [Score: Low, not 24]
+- Thought B: "Try multiplying: 4 * 4 * 4 * 4 = 256" [Score: Low, too big]
+- Thought C: "Try combining operations: (4 + 4) * (4 - 4)" [Score: Medium]
+- Thought D: "Try: 4 * 4 + 4 + 4" [Score: High! = 24] ✓
+
+Selected: Thought D is correct!
+
+Answer: 4 * 4 + 4 + 4 = 24
+            </code>
+        </div>
+
+        <p><strong>If no solution at Level 1, would expand promising thoughts to Level 2...</strong></p>
+    </div>
+
+    <h4>Monte Carlo Tree Search (MCTS)</h4>
+
+    <div class="overview-box">
+        <p><strong>Used in:</strong> AlphaGo, game playing</p>
+        <p><strong>Phases:</strong></p>
+        <ol>
+            <li><strong>Selection:</strong> Walk down tree to promising node</li>
+            <li><strong>Expansion:</strong> Add new child nodes</li>
+            <li><strong>Simulation:</strong> Randomly play out to end</li>
+            <li><strong>Backpropagation:</strong> Update all nodes on path with result</li>
+        </ol>
+        <p><strong>Result:</strong> Balances exploration (trying new paths) vs exploitation (using best known paths)</p>
+    </div>
+
+    <div class="key-point">
+        <p><strong>When to Use Tree Search:</strong></p>
+        <ul>
+            <li>Problems with multiple possible solutions</li>
+            <li>When you can evaluate quality of intermediate steps</li>
+            <li>Strategic planning tasks</li>
+            <li>Math and logical reasoning</li>
+        </ul>
+        <p><strong>Cost:</strong> Tree search requires many LLM calls (expensive!), but can find better solutions</p>
+    </div>
+
+    <h2>5. Multi-Agent Systems</h2>
+
+    <div class="eli5-box">
+        <h3>👥 ELI5: Multi-Agent Systems</h3>
+        <p>Imagine a big school project where:</p>
+        <ul>
+            <li>One student is good at research</li>
+            <li>One student is good at writing</li>
+            <li>One student is good at making presentations</li>
+            <li>One student is good at organizing</li>
+        </ul>
+        <p>Instead of one person doing everything, each student does what they're best at, and they work together!</p>
+        <p>Multi-agent systems are like having a TEAM of AI agents that collaborate!</p>
+    </div>
+
+    <h3>Why Multi-Agent Systems?</h3>
+
+    <div class="overview-box">
+        <p><strong>Limitations of single agents:</strong></p>
+        <ul>
+            <li>One agent must be good at EVERYTHING</li>
+            <li>Hard to maintain as complexity grows</li>
+            <li>No specialization</li>
+        </ul>
+
+        <p><strong>Benefits of multiple agents:</strong></p>
+        <ul>
+            <li>Specialization (each agent is expert in one area)</li>
+            <li>Modularity (easy to add/remove/update agents)</li>
+            <li>Parallel execution (agents work simultaneously)</li>
+            <li>Scalability (can add more agents as needed)</li>
+            <li>Robustness (if one agent fails, others continue)</li>
+        </ul>
+    </div>
+
+    <h3>Multi-Agent Communication Patterns</h3>
+
+    <h4>1. Centralized (Hub-and-Spoke)</h4>
+
+    <div class="workflow-diagram">
+        <pre>
+          Agent 1
+             |
+Agent 2 - COORDINATOR - Agent 4
+             |
+          Agent 3
+        </pre>
+        <p>All communication goes through central coordinator</p>
+        <p><strong>Pros:</strong> Simple, easy to control</p>
+        <p><strong>Cons:</strong> Coordinator is bottleneck</p>
+    </div>
+
+    <h4>2. Decentralized (Peer-to-Peer)</h4>
+
+    <div class="workflow-diagram">
+        <pre>
+      Agent 1 ←→ Agent 2
+         ↕           ↕
+      Agent 3 ←→ Agent 4
+        </pre>
+        <p>Agents communicate directly with each other</p>
+        <p><strong>Pros:</strong> No bottleneck, more flexible</p>
+        <p><strong>Cons:</strong> Complex coordination, can be chaotic</p>
+    </div>
+
+    <h4>3. Hierarchical</h4>
+
+    <div class="workflow-diagram">
+        <pre>
+         Manager Agent
+              |
+      +-------+-------+
+      |       |       |
+   Agent A Agent B Agent C
+      |       |
+   Worker Worker
+        </pre>
+        <p>Tree structure with managers and workers</p>
+        <p><strong>Pros:</strong> Clear authority, scalable</p>
+        <p><strong>Cons:</strong> Still has some bottlenecks</p>
+    </div>
+
+    <h3>Multi-Agent Conversation Patterns</h3>
+
+    <div class="example-box">
+        <h4>Pattern 1: Sequential Conversation</h4>
+        <p>Agents take turns in fixed order</p>
+        <div class="code-block">
+            <code>
+User: "Research AI safety"
+
+Research Agent → "I found 10 papers on AI safety"
+↓
+Analysis Agent → "Key themes are alignment, robustness, transparency"
+↓
+Writing Agent → "Here's a summary report..."
+↓
+Editor Agent → "I've polished the report"
+↓
+Final report delivered to user
+            </code>
+        </div>
+    </div>
+
+    <div class="example-box">
+        <h4>Pattern 2: Debate/Discussion</h4>
+        <p>Agents discuss and argue to reach consensus</p>
+        <div class="code-block">
+            <code>
+Question: "Should we use approach A or B?"
+
+Proponent Agent: "Approach A is better because X, Y, Z"
+↓
+Critic Agent: "But approach A has weaknesses P, Q. Approach B solves those."
+↓
+Proponent Agent: "That's true, but we can mitigate P and Q by doing R"
+↓
+Judge Agent: "Based on discussion, let's use Approach A with mitigation R"
+            </code>
+        </div>
+        <p><strong>Benefit:</strong> Multiple perspectives lead to better decisions</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Pattern 3: Broadcast</h4>
+        <p>One agent sends message to all others</p>
+        <div class="code-block">
+            <code>
+Coordinator: "We need to analyze dataset X"
+↓ (broadcast)
+├→ Statistical Agent: Starts computing statistics
+├→ Visualization Agent: Starts creating charts
+├→ ML Agent: Starts training model
+└→ Report Agent: Prepares template
+
+All work in parallel, then results are combined!
+            </code>
+        </div>
+    </div>
+
+    <h3>Challenges in Multi-Agent Systems</h3>
+
+    <div class="problem-box">
+        <h4>Challenge 1: Coordination</h4>
+        <p><strong>Problem:</strong> Agents must work together without stepping on each other's toes</p>
+        <p><strong>Example:</strong> Two agents both trying to edit the same document</p>
+        <p><strong>Solutions:</strong></p>
+        <ul>
+            <li>Clear role definitions</li>
+            <li>Communication protocols</li>
+            <li>Locking/synchronization mechanisms</li>
+            <li>Coordinator agent</li>
+        </ul>
+    </div>
+
+    <div class="problem-box">
+        <h4>Challenge 2: Communication Overhead</h4>
+        <p><strong>Problem:</strong> More agents = more messages = slower system</p>
+        <p><strong>Example:</strong> 10 agents each checking in with each other every step</p>
+        <p><strong>Solutions:</strong></p>
+        <ul>
+            <li>Reduce unnecessary communication</li>
+            <li>Use efficient message formats</li>
+            <li>Batch updates</li>
+            <li>Hierarchical communication</li>
+        </ul>
+    </div>
+
+    <div class="problem-box">
+        <h4>Challenge 3: Consistency</h4>
+        <p><strong>Problem:</strong> Agents may have different/conflicting information</p>
+        <p><strong>Example:</strong> Agent A thinks task is complete, Agent B thinks it's still in progress</p>
+        <p><strong>Solutions:</strong></p>
+        <ul>
+            <li>Shared state/memory</li>
+            <li>Regular synchronization</li>
+            <li>Central source of truth</li>
+            <li>Conflict resolution protocols</li>
+        </ul>
+    </div>
+
+    <div class="problem-box">
+        <h4>Challenge 4: Error Propagation</h4>
+        <p><strong>Problem:</strong> One agent's error can cascade to others</p>
+        <p><strong>Example:</strong> Agent A retrieves wrong data → Agent B analyzes it → Agent C draws wrong conclusions</p>
+        <p><strong>Solutions:</strong></p>
+        <ul>
+            <li>Validation at each step</li>
+            <li>Error detection and recovery</li>
+            <li>Checkpointing</li>
+            <li>Redundancy (multiple agents verify)</li>
+        </ul>
+    </div>
+
+    <div class="problem-box">
+        <h4>Challenge 5: Debugging Complexity</h4>
+        <p><strong>Problem:</strong> Hard to trace where things went wrong</p>
+        <p><strong>Solutions:</strong></p>
+        <ul>
+            <li>Comprehensive logging</li>
+            <li>Message tracing</li>
+            <li>Visualization tools</li>
+            <li>Step-by-step execution modes</li>
+        </ul>
+    </div>
+
+    <h3>Multi-Agent Frameworks</h3>
+
+    <div class="agent-card">
+        <h4>AutoGen (Microsoft)</h4>
+        <ul>
+            <li>Framework for building multi-agent conversation systems</li>
+            <li>Agents can be LLMs, tools, or humans</li>
+            <li>Supports various conversation patterns</li>
+            <li>Easy to define agent roles and behaviors</li>
+        </ul>
+        <div class="code-block">
+            <code>
+from autogen import AssistantAgent, UserProxyAgent
+
+# Define agents
+assistant = AssistantAgent(
+    name="assistant",
+    llm_config={"model": "gpt-4"}
+)
+
+user_proxy = UserProxyAgent(
+    name="user",
+    human_input_mode="NEVER"
+)
+
+# Start conversation
+user_proxy.initiate_chat(
+    assistant,
+    message="Build a snake game"
+)
+            </code>
+        </div>
+    </div>
+
+    <div class="agent-card">
+        <h4>CrewAI</h4>
+        <ul>
+            <li>Role-based multi-agent framework</li>
+            <li>Agents have specific roles (researcher, writer, etc.)</li>
+            <li>Task-oriented workflows</li>
+            <li>Sequential and parallel execution</li>
+        </ul>
+        <div class="code-block">
+            <code>
+from crewai import Agent, Task, Crew
+
+researcher = Agent(
+    role='Researcher',
+    goal='Research AI topics',
+    backstory='Expert at finding information'
+)
+
+writer = Agent(
+    role='Writer',
+    goal='Write articles',
+    backstory='Excellent at clear communication'
+)
+
+research_task = Task(
+    description='Research AI safety',
+    agent=researcher
+)
+
+write_task = Task(
+    description='Write article based on research',
+    agent=writer
+)
+
+crew = Crew(
+    agents=[researcher, writer],
+    tasks=[research_task, write_task],
+    verbose=True
+)
+
+result = crew.kickoff()
+            </code>
+        </div>
+    </div>
+
+    <h2>6. Agent Evaluation</h2>
+
+    <div class="eli5-box">
+        <h3>📊 ELI5: Evaluating Agents</h3>
+        <p>Imagine you have a robot helper. How do you know if it's doing a good job?</p>
+        <ul>
+            <li>Does it complete the tasks you give it? (Success Rate)</li>
+            <li>How long does it take? (Efficiency)</li>
+            <li>Does it make mistakes? (Error Rate)</li>
+            <li>Is it safe? (Safety)</li>
+            <li>Does it follow instructions? (Alignment)</li>
+        </ul>
+        <p>Agent evaluation measures all these things!</p>
+    </div>
+
+    <h3>Evaluation Dimensions</h3>
+
+    <table class="comparison-table">
+        <tr>
+            <th>Dimension</th>
+            <th>What It Measures</th>
+            <th>How to Measure</th>
+        </tr>
+        <tr>
+            <td><strong>Task Success Rate</strong></td>
+            <td>Does the agent complete tasks correctly?</td>
+            <td>
+                • % of tasks completed successfully<br>
+                • Comparison with ground truth<br>
+                • Human evaluation
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Efficiency</strong></td>
+            <td>How resource-efficient is the agent?</td>
+            <td>
+                • Number of steps taken<br>
+                • Time to completion<br>
+                • Number of LLM calls<br>
+                • Cost in API calls
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Robustness</strong></td>
+            <td>Does it handle edge cases and errors?</td>
+            <td>
+                • Test with unusual inputs<br>
+                • Inject errors and see recovery<br>
+                • Stress testing
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Safety</strong></td>
+            <td>Does it avoid harmful actions?</td>
+            <td>
+                • Red-teaming (adversarial testing)<br>
+                • Safety constraint violations<br>
+                • Human safety audits
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Alignment</strong></td>
+            <td>Does it follow user intent?</td>
+            <td>
+                • Compare actions with intended goal<br>
+                • Human evaluation of appropriateness<br>
+                • Instruction-following metrics
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Transparency</strong></td>
+            <td>Can we understand its reasoning?</td>
+            <td>
+                • Quality of explanations<br>
+                • Traceability of decisions<br>
+                • Interpretability of actions
+            </td>
+        </tr>
+    </table>
+
+    <h3>Agent-Specific Evaluation Challenges</h3>
+
+    <div class="problem-box">
+        <h4>Challenge 1: No Single "Right Answer"</h4>
+        <p>Unlike traditional ML (classification/regression), agents have many ways to accomplish goals</p>
+
+        <p><strong>Example:</strong> "Book a vacation"</p>
+        <ul>
+            <li>Agent A: Books flight A, hotel B, activities X,Y → Total $2000</li>
+            <li>Agent B: Books flight C, hotel D, activities Z → Total $1500</li>
+        </ul>
+        <p>Both might be valid! How to compare?</p>
+
+        <p><strong>Solutions:</strong></p>
+        <ul>
+            <li>Define success criteria (within budget, includes requested activities, etc.)</li>
+            <li>Human evaluation with rubrics</li>
+            <li>Measure against constraints, not exact match</li>
+        </ul>
+    </div>
+
+    <div class="problem-box">
+        <h4>Challenge 2: Long Execution Traces</h4>
+        <p>Agents take many actions. Evaluating entire trace is hard.</p>
+
+        <p><strong>Solutions:</strong></p>
+        <ul>
+            <li>Milestone-based evaluation (check intermediate goals)</li>
+            <li>Automatic trace analysis tools</li>
+            <li>Sample-based evaluation (check representative steps)</li>
+        </ul>
+    </div>
+
+    <div class="problem-box">
+        <h4>Challenge 3: Stochasticity</h4>
+        <p>LLMs are non-deterministic. Same agent might succeed/fail on different runs.</p>
+
+        <p><strong>Solutions:</strong></p>
+        <ul>
+            <li>Run multiple times, report average success rate</li>
+            <li>Report variance/confidence intervals</li>
+            <li>Use temperature=0 for more deterministic behavior (testing only)</li>
+        </ul>
+    </div>
+
+    <h3>Evaluation Benchmarks</h3>
+
+    <div class="example-box">
+        <h4>Common Agent Benchmarks</h4>
+
+        <p><strong>1. WebArena</strong></p>
+        <ul>
+            <li>Agents interact with realistic websites</li>
+            <li>Tasks: Shopping, booking, information retrieval</li>
+            <li>Measures: Success rate, efficiency</li>
+        </ul>
+
+        <p><strong>2. SWE-Bench (Software Engineering)</strong></p>
+        <ul>
+            <li>Agents fix real GitHub issues</li>
+            <li>Tests: Can agent resolve actual bugs?</li>
+            <li>Measures: % of issues correctly resolved</li>
+        </ul>
+
+        <p><strong>3. HotPotQA (Multi-Hop Reasoning)</strong></p>
+        <ul>
+            <li>Questions requiring multiple reasoning steps</li>
+            <li>Tests: Information gathering + reasoning</li>
+            <li>Measures: Answer accuracy</li>
+        </ul>
+
+        <p><strong>4. ALFWorld (Interactive Environment)</strong></p>
+        <ul>
+            <li>Text-based game environment</li>
+            <li>Tasks: Navigate, pick up objects, complete goals</li>
+            <li>Measures: Task completion rate</li>
+        </ul>
+
+        <p><strong>5. AgentBench (Comprehensive)</strong></p>
+        <ul>
+            <li>Multi-domain evaluation suite</li>
+            <li>8 different environments</li>
+            <li>Tests various agent capabilities</li>
+        </ul>
+    </div>
+
+    <h3>Evaluation Best Practices</h3>
+
+    <div class="solution-box">
+        <h4>1. Define Clear Success Criteria</h4>
+        <p>Before building, define what "success" means:</p>
+        <ul>
+            <li>Task completion requirements</li>
+            <li>Quality standards</li>
+            <li>Time/cost constraints</li>
+            <li>Safety boundaries</li>
+        </ul>
+
+        <h4>2. Multi-Dimensional Evaluation</h4>
+        <p>Don't just measure accuracy:</p>
+        <ul>
+            <li>Success rate</li>
+            <li>Efficiency (steps, time, cost)</li>
+            <li>Robustness</li>
+            <li>Safety</li>
+            <li>User satisfaction</li>
+        </ul>
+
+        <h4>3. Use Realistic Test Cases</h4>
+        <ul>
+            <li>Real user queries (not synthetic)</li>
+            <li>Edge cases and difficult scenarios</li>
+            <li>Adversarial examples</li>
+        </ul>
+
+        <h4>4. Continuous Monitoring</h4>
+        <ul>
+            <li>Monitor production performance</li>
+            <li>Track metrics over time</li>
+            <li>User feedback loops</li>
+            <li>A/B testing improvements</li>
+        </ul>
+
+        <h4>5. Human Evaluation</h4>
+        <ul>
+            <li>Automated metrics aren't everything</li>
+            <li>Get human judgments on quality</li>
+            <li>Use rubrics for consistency</li>
+            <li>Multiple annotators</li>
+        </ul>
+    </div>
+
+    <div class="key-point">
+        <p><strong>Golden Rule of Agent Evaluation:</strong></p>
+        <p>There's no single metric that captures everything. Use a combination of automated metrics, benchmarks, and human evaluation to get a complete picture of agent performance.</p>
+    </div>
+
+    <h2>7. Putting It All Together: Building an Agent System</h2>
+
+    <div class="overview-box">
+        <h3>Complete Agent System Architecture</h3>
+        <p>Let's see how all the pieces fit together in a real system:</p>
+    </div>
+
+    <div class="workflow-diagram">
+        <h4>End-to-End Agent System</h4>
+
+        <p><strong>Layer 1: User Interface</strong></p>
+        <p>User Input → Input Validation/Safety</p>
+
+        <p><strong>Layer 2: Planning & Orchestration</strong></p>
+        <p>↓</p>
+        <p>Orchestrator Agent:</p>
+        <ul style="text-align: left;">
+            <li>Understands user intent</li>
+            <li>Decomposes into subtasks</li>
+            <li>Plans execution strategy</li>
+            <li>Decides which framework to use (ReACT, ReWOO, etc.)</li>
+        </ul>
+
+        <p><strong>Layer 3: Tool Integration</strong></p>
+        <p>↓</p>
+        <p>Tool Router (MCP):</p>
+        <ul style="text-align: left;">
+            <li>Database queries</li>
+            <li>Web search</li>
+            <li>APIs</li>
+            <li>File systems</li>
+            <li>External services</li>
+        </ul>
+
+        <p><strong>Layer 4: Worker Agents</strong></p>
+        <p>↓</p>
+        <p>Specialized Agents (parallel execution):</p>
+        <ul style="text-align: left;">
+            <li>Research Agent</li>
+            <li>Analysis Agent</li>
+            <li>Generation Agent</li>
+            <li>Validation Agent</li>
+        </ul>
+
+        <p><strong>Layer 5: Memory & State</strong></p>
+        <p>↓</p>
+        <ul style="text-align: left;">
+            <li>Conversation history</li>
+            <li>Intermediate results</li>
+            <li>Reflections/learnings</li>
+            <li>User preferences</li>
+        </ul>
+
+        <p><strong>Layer 6: Output Processing</strong></p>
+        <p>↓</p>
+        <p>Output Guardrails → Safety Checks → Format Response</p>
+
+        <p><strong>Layer 7: Monitoring & Evaluation</strong></p>
+        <p>↓</p>
+        <p>Logging, Metrics, Human Feedback</p>
+
+        <p>↓</p>
+        <p><strong>Final Response to User</strong></p>
+    </div>
+
+    <div class="example-box">
+        <h4>Example: Customer Support Agent System</h4>
+
+        <p><strong>User Query:</strong> "I want to return my laptop, but I lost the receipt. What are my options?"</p>
+
+        <p><strong>Step 1: Input Processing</strong></p>
+        <div class="code-block">
+            <code>
+Safety Check: ✓ (Query is safe)
+Intent Classification: "Return request with complication"
+            </code>
+        </div>
+
+        <p><strong>Step 2: Orchestrator Plans</strong></p>
+        <div class="code-block">
+            <code>
+Orchestrator: "This requires:
+1. Check return policy
+2. Look up customer order history (to find receipt)
+3. Check if exceptions can be made
+4. Generate response with options"
+
+Framework: ReACT (need to adapt based on findings)
+            </code>
+        </div>
+
+        <p><strong>Step 3: Execution (ReACT)</strong></p>
+        <div class="code-block">
+            <code>
+Thought 1: "Check return policy requirements"
+Action 1: query_database("return_policy")
+Observation 1: "Standard policy requires receipt. Exceptions for registered users with order history."
+
+Thought 2: "Check if user is registered and has order history"
+Action 2: query_database("customer_orders", user_id)
+Observation 2: "User purchased laptop on 2024-01-15, within 30-day window. User is registered."
+
+Thought 3: "User qualifies for exception! Generate helpful response."
+            </code>
+        </div>
+
+        <p><strong>Step 4: Response Generation</strong></p>
+        <div class="code-block">
+            <code>
+Generator Agent: "Good news! Since you're a registered customer, I was able to
+locate your purchase from January 15th. You're within our 30-day return window.
+
+Even without the physical receipt, we can process your return using your order
+history. Here's what you need to do:
+1. Visit any store location or ship the laptop to [address]
+2. Include your order number: #12345
+3. We'll process your refund within 5-7 business days
+
+Would you like me to email you a return label?"
+            </code>
+        </div>
+
+        <p><strong>Step 5: Validation & Safety</strong></p>
+        <div class="code-block">
+            <code>
+Validator Agent: ✓ Information is accurate
+Safety Check: ✓ Response is helpful and safe
+            </code>
+        </div>
+
+        <p><strong>Step 6: Monitoring</strong></p>
+        <div class="code-block">
+            <code>
+Logged:
+- Query classification: Return request
+- Tools used: Database (2 calls)
+- Framework: ReACT
+- Steps: 3
+- Latency: 2.3s
+- User satisfaction: [Pending feedback]
+            </code>
+        </div>
+    </div>
+
+    <h2>Summary: Key Takeaways</h2>
+
+    <div class="key-point">
+        <h3>Core Concepts</h3>
+        <ul>
+            <li><strong>Agency Spectrum:</strong> From simple LLMs to fully autonomous agents</li>
+            <li><strong>Workflows:</strong> Chaining, routing, parallelization, reflection, orchestrator-worker</li>
+            <li><strong>Tools:</strong> Extend agent capabilities through function calling and MCP</li>
+            <li><strong>Reasoning:</strong> ReACT, Reflexion, ReWOO, tree search for complex problems</li>
+            <li><strong>Multi-Agent:</strong> Collaboration patterns and coordination challenges</li>
+            <li><strong>Evaluation:</strong> Multi-dimensional assessment of agent performance</li>
+        </ul>
+
+        <h3>Design Principles</h3>
+        <ul>
+            <li>Start simple, add complexity only when needed</li>
+            <li>Make reasoning transparent (log thoughts and actions)</li>
+            <li>Include error handling and recovery</li>
+            <li>Define clear success criteria upfront</li>
+            <li>Monitor and evaluate continuously</li>
+            <li>Safety first - use guardrails</li>
+        </ul>
+
+        <h3>Best Practices</h3>
+        <ul>
+            <li>Use prompt chaining for multi-step tasks</li>
+            <li>Route different query types to specialized handlers</li>
+            <li>Parallelize independent operations</li>
+            <li>Add reflection for quality improvements</li>
+            <li>Use orchestrator-worker for complex systems</li>
+            <li>Standardize tools with MCP when possible</li>
+            <li>Choose reasoning framework based on task requirements</li>
+            <li>Evaluate on multiple dimensions, not just accuracy</li>
+        </ul>
+    </div>
+
+    <h2>Next Steps: Project 3</h2>
+
+    <div class="overview-box">
+        <h3>Project 3: Build Your Own Agent System</h3>
+
+        <p><strong>What you'll build:</strong> A multi-agent system for a real-world task</p>
+
+        <p><strong>Suggested ideas:</strong></p>
+        <ul>
+            <li>Research assistant that synthesizes information from multiple sources</li>
+            <li>Code review agent that finds bugs and suggests improvements</li>
+            <li>Travel planning agent that coordinates flights, hotels, and activities</li>
+            <li>Data analysis agent that explores datasets and generates insights</li>
+        </ul>
+
+        <p><strong>Requirements:</strong></p>
+        <ul>
+            <li>Use at least 2 different workflow patterns</li>
+            <li>Integrate at least 3 tools/APIs</li>
+            <li>Implement one multi-step reasoning framework (ReACT, Reflexion, or ReWOO)</li>
+            <li>Include proper error handling</li>
+            <li>Add input/output safety checks</li>
+            <li>Evaluate on multiple dimensions</li>
+        </ul>
+
+        <p><strong>Frameworks to explore:</strong></p>
+        <ul>
+            <li>LangChain / LangGraph (Python)</li>
+            <li>AutoGen (Python)</li>
+            <li>CrewAI (Python)</li>
+            <li>Semantic Kernel (C# / Python)</li>
+        </ul>
+    </div>
+
+    <div style="margin-top: 60px; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px; text-align: center;">
+        <h2 style="color: #ffd700; margin-top: 0;">🎉 Congratulations!</h2>
+        <p style="font-size: 1.2em;">You've completed Week 3: Agents!</p>
+        <p>You now understand how to design and build sophisticated AI agent systems with multi-step reasoning, tool use, and multi-agent collaboration.</p>
+        <p><strong>Next:</strong> Apply these concepts in Project 3 to build your own agent system!</p>
+    </div>
+
+</body>
+</html>
